@@ -21,11 +21,11 @@ Joy`,
 
 To escape and find peace, they must journey through 5 chapters, each representing a stage of grief:
 
-ƒ?› Chapter 1: Denial
-ƒ?› Chapter 2: Anger
-ƒ?› Chapter 3: Bargaining
-ƒ?› Chapter 4: Depression
-ƒ?› Chapter 5: Acceptance
+Chapter 1: Denial
+Chapter 2: Anger
+Chapter 3: Bargaining
+Chapter 4: Depression
+Chapter 5: Acceptance
 
 In each chapter, they must work together to collect a key. Only by gathering all 5 keys can they unlock the door to healing and find their way home.
 
