@@ -125,6 +125,7 @@ export function useThreeSetup({ containerRef, threeRef, network, role, chapter =
       role,
       modelUrl: CHAR[localCharKey].url,
       modelScale: CHAR[localCharKey].scale,
+      chapter: chapterNumber,
     });
 
     threeRef.current = {

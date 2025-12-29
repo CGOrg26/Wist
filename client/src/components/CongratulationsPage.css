@@ -1,0 +1,563 @@
+.congrats-screen {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  inset: 0;
+
+  /* ✅ allow scroll if content is taller than screen */
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  display: flex;
+  justify-content: center;
+
+  /* ✅ don't vertically center (it causes clipping on short screens) */
+  align-items: flex-start;
+
+  /* ✅ breathing room */
+  padding: 32px 16px;
+
+  z-index: 10000;
+}
+
+/* ✅ Back to Lobby button */
+.back-lobby-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 20;
+
+  padding: 12px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(138, 119, 255, 0.35);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+
+  color: #ffffff;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.back-lobby-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 215, 0, 0.55);
+  box-shadow: 0 0 18px rgba(138, 119, 255, 0.35);
+}
+
+/* Background */
+.congrats-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.congrats-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    #0a0515 0%,
+    #1a0f2e 25%,
+    #2a1a4a 50%,
+    #1a0f2e 75%,
+    #0a0515 100%
+  );
+}
+
+.congrats-atmosphere {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(138, 119, 255, 0.15) 0%,
+    transparent 70%
+  );
+  animation: atmospherePulse 6s ease-in-out infinite;
+}
+
+@keyframes atmospherePulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Confetti */
+.confetti-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  border-radius: 2px;
+  animation: confettiFall linear infinite;
+  opacity: 0.9;
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-20px) translateX(0) rotateZ(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) translateX(100px) rotateZ(720deg);
+    opacity: 0;
+  }
+}
+
+/* Fireworks */
+.fireworks-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.firework {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  animation: fireworkFade 3s ease-out infinite;
+}
+
+.firework-spark {
+  position: absolute;
+  width: 3px;
+  height: 40px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(138, 119, 255, 0.6) 50%,
+    transparent 100%
+  );
+  transform-origin: bottom center;
+  animation: sparkBurst 1.2s ease-out infinite;
+  box-shadow: 0 0 8px rgba(138, 119, 255, 0.8);
+}
+
+@keyframes fireworkFade {
+  0%,
+  20% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes sparkBurst {
+  0% {
+    height: 0;
+    opacity: 1;
+  }
+  50% {
+    height: 50px;
+    opacity: 0.8;
+  }
+  100% {
+    height: 10px;
+    opacity: 0;
+  }
+}
+
+/* Main content */
+.congrats-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 700px;
+  width: min(700px, 100%);
+  padding: 60px 40px;
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+  transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ✅ center content horizontally */
+  margin: 0 auto;
+}
+
+.congrats-content.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.congrats-trophy {
+  font-size: 120px;
+  margin-bottom: 30px;
+  animation: trophyBounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6));
+}
+
+@keyframes trophyBounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.1);
+  }
+}
+
+.congrats-title {
+  font-size: 72px;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0 0 40px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-shadow: 0 0 40px rgba(138, 119, 255, 0.8),
+    0 0 80px rgba(138, 119, 255, 0.4), 0 4px 20px rgba(0, 0, 0, 0.8);
+  animation: titleShine 3s ease-in-out infinite;
+}
+
+@keyframes titleShine {
+  0%,
+  100% {
+    text-shadow: 0 0 40px rgba(138, 119, 255, 0.8),
+      0 0 80px rgba(138, 119, 255, 0.4), 0 4px 20px rgba(0, 0, 0, 0.8);
+  }
+  50% {
+    text-shadow: 0 0 60px rgba(255, 107, 53, 0.9),
+      0 0 120px rgba(255, 107, 53, 0.5), 0 4px 20px rgba(0, 0, 0, 0.8);
+  }
+}
+
+.congrats-message {
+  margin-bottom: 50px;
+}
+
+.congrats-text {
+  font-size: 24px;
+  font-weight: 500;
+  color: #c8b8ff;
+  margin: 0 0 12px;
+  letter-spacing: 1px;
+}
+
+.congrats-chapter {
+  font-size: 48px;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0 0 16px;
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, #8a77ff 0%, #ff6b35 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 4px 12px rgba(138, 119, 255, 0.3);
+  filter: drop-shadow(0 4px 12px rgba(138, 119, 255, 0.3));
+}
+
+.congrats-subtext {
+  font-size: 18px;
+  font-weight: 400;
+  color: #b8a8ff;
+  font-style: italic;
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* Key Collection Animation */
+.key-collection {
+  margin: 40px 0;
+  padding: 30px;
+  background: linear-gradient(
+    135deg,
+    rgba(138, 119, 255, 0.15) 0%,
+    rgba(255, 107, 53, 0.15) 100%
+  );
+  border: 3px solid rgba(138, 119, 255, 0.3);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.key-collection.visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.key-icon {
+  font-size: 80px;
+  animation: keyBounce 2s ease-in-out infinite, keyRotate 4s linear infinite;
+  filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8));
+  margin-bottom: 20px;
+}
+
+@keyframes keyBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes keyRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.key-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: keyShine 3s linear infinite;
+}
+
+@keyframes keyShine {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(200%);
+  }
+}
+
+.key-label {
+  font-size: 28px;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.8),
+    0 0 40px rgba(255, 215, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.6);
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.key-description {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+/* Keys Progress Display */
+.congrats-progress {
+  margin: 30px 0;
+}
+
+.progress-label {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.keys-display {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.key-slot {
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 3px solid rgba(138, 119, 255, 0.3);
+  border-radius: 15px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: grayscale(100%);
+}
+
+.key-slot.collected {
+  background: linear-gradient(
+    135deg,
+    rgba(138, 119, 255, 0.3) 0%,
+    rgba(255, 107, 53, 0.3) 100%
+  );
+  border-color: rgba(255, 215, 0, 0.6);
+  filter: grayscale(0%) drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+  animation: keySlotPulse 2s ease-in-out infinite;
+}
+
+@keyframes keySlotPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+  }
+}
+
+/* Continue button */
+.congrats-continue-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 50px;
+  background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  animation: btnPulse 2s ease-in-out infinite;
+}
+
+@keyframes btnPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.5),
+      0 8px 25px rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(255, 107, 53, 0.8),
+      0 12px 35px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.congrats-continue-btn:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 0 60px rgba(255, 107, 53, 0.9),
+    0 15px 40px rgba(0, 0, 0, 0.6);
+}
+
+.btn-glow {
+  position: absolute;
+  inset: -4px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent);
+  border-radius: 50px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  filter: blur(8px);
+}
+
+.congrats-continue-btn:hover .btn-glow {
+  opacity: 1;
+}
+
+.btn-text {
+  font-size: 22px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  position: relative;
+  z-index: 1;
+}
+
+.btn-arrow {
+  font-size: 24px;
+  color: #ffffff;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.congrats-continue-btn:hover .btn-arrow {
+  transform: translateX(8px);
+}
+
+/* Vignette */
+.congrats-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .congrats-content {
+    padding: 40px 24px;
+  }
+
+  .congrats-trophy {
+    font-size: 80px;
+  }
+
+  .congrats-title {
+    font-size: 48px;
+    letter-spacing: 2px;
+  }
+
+  .congrats-text {
+    font-size: 20px;
+  }
+
+  .congrats-chapter {
+    font-size: 36px;
+  }
+
+  .congrats-subtext {
+    font-size: 16px;
+  }
+
+  .congrats-continue-btn {
+    padding: 18px 40px;
+  }
+
+  .btn-text {
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+
+  .btn-arrow {
+    font-size: 20px;
+  }
+
+  .back-lobby-btn {
+    top: 14px;
+    left: 14px;
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+}
+
+/* Accessibility - reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .confetti-piece,
+  .firework,
+  .firework-spark,
+  .congrats-trophy,
+  .congrats-title,
+  .congrats-continue-btn,
+  .congrats-atmosphere {
+    animation: none !important;
+  }
+}

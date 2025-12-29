@@ -1,0 +1,226 @@
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap");
+
+/* Diary Entry Overlay */
+.diary-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(180deg, #1a0f2e 0%, #0f0820 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  animation: diaryFadeIn 0.8s ease;
+}
+
+@keyframes diaryFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.diary-container {
+  max-width: 800px;
+  width: 90vw;
+  perspective: 1500px;
+}
+
+.diary-page {
+  background: linear-gradient(135deg, #f9f7f0 0%, #ede8dc 100%);
+  border-radius: 8px;
+  padding: 60px 50px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 100px rgba(138, 119, 255, 0.2);
+  position: relative;
+  animation: pageFlip 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+@keyframes pageFlip {
+  from {
+    opacity: 0;
+    transform: rotateY(-15deg) translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0);
+  }
+}
+
+/* Notebook lines effect */
+.diary-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50px;
+  width: 2px;
+  height: 100%;
+  background: rgba(255, 107, 53, 0.3);
+  pointer-events: none;
+}
+
+.diary-content {
+  flex: 1;
+}
+
+.diary-title {
+  font-family: "Caveat", "Brush Script MT", cursive;
+  font-size: 36px;
+  color: #2a1a4a;
+  margin: 0 0 30px 0;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.diary-text {
+  font-family: "Caveat", "Segoe Print", "Comic Sans MS", cursive;
+  font-size: 22px;
+  line-height: 1.5;
+  color: #1a0f2e;
+  white-space: pre-wrap;
+  margin-bottom: 20px;
+  text-align: left;
+  font-weight: 400;
+}
+
+.diary-word {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.diary-word.visible {
+  opacity: 1;
+}
+
+.diary-cursor {
+  display: inline-block;
+  width: 6px;
+  height: 18px;
+  margin-left: 2px;
+  background: rgba(26, 15, 46, 0.7);
+  animation: diaryBlink 0.9s step-end infinite;
+  vertical-align: baseline;
+}
+
+@keyframes diaryBlink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.diary-date {
+  font-family: "Caveat", "Brush Script MT", cursive;
+  font-size: 20px;
+  color: #8a77ff;
+  text-align: right;
+  margin-top: 20px;
+  font-style: italic;
+}
+
+.diary-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+  gap: 20px;
+}
+
+.diary-btn {
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.skip-btn {
+  background: transparent;
+  border: 2px solid rgba(138, 119, 255, 0.4);
+  color: #8a77ff;
+}
+
+.skip-btn:hover {
+  background: rgba(138, 119, 255, 0.1);
+  border-color: rgba(138, 119, 255, 0.6);
+  box-shadow: 0 0 15px rgba(138, 119, 255, 0.3);
+}
+
+.next-btn {
+  background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+}
+
+.next-btn:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6);
+}
+
+.page-indicator {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.page-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(138, 119, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.page-dot.active {
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(135deg, #8a77ff 0%, #a68fff 100%);
+  box-shadow: 0 0 15px rgba(138, 119, 255, 0.6);
+}
+
+.page-dot.completed {
+  background: rgba(138, 119, 255, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .diary-page {
+    padding: 40px 30px;
+    min-height: 400px;
+  }
+
+  .diary-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .diary-text {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .diary-navigation {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .diary-btn {
+    width: 100%;
+    padding: 14px 24px;
+  }
+
+  .page-indicator {
+    order: -1;
+  }
+}

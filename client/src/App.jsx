@@ -5,10 +5,8 @@ import { NetworkClient } from "./network/NetworkClient.js";
 import GameDialog from "./components/GameDialog.jsx";
 import GameStatusBar from "./components/GameStatusBar.jsx";
 import MainMenu from "./components/MainMenu.jsx";
-
-import menuImage from "./assets/menu.jpeg";
-import dadImage from "./assets/dad_removed.png";
-import houseImage from "./assets/house_removed.png";
+import CongratulationsPage from "./components/CongratulationsPage.jsx";
+import DiaryEntry from "./components/DiaryEntry.jsx";
 
 function App() {
   const [screen, setScreen] = useState("mainMenu"); // "mainMenu" | "lobby" | "waiting" | "game"
@@ -47,6 +45,13 @@ function App() {
   const [inviteStatus, setInviteStatus] = useState("");
   const [selectedChapter, setSelectedChapter] = useState(1);
   const [gameChapter, setGameChapter] = useState(1);
+  const [showCongrats, setShowCongrats] = useState(false);
+  const [completedChapter, setCompletedChapter] = useState(null);
+
+  // Track completed chapters and show diary on first login
+  const [completedChapters, setCompletedChapters] = useState(new Set());
+  const [showDiary, setShowDiary] = useState(false);
+  const [hasSeenDiary, setHasSeenDiary] = useState(false);
 
   // Lobby sub-modes:
   // home => 4 bottom buttons only
@@ -103,6 +108,13 @@ function App() {
 
     setUser(data);
     setAuthForm({ username: "", password: "" });
+
+    // Show diary on first login if user hasn't seen it
+    const diaryKey = `hasSeenDiary_${data.id}`;
+    const seenDiary = localStorage.getItem(diaryKey);
+    if (!seenDiary) {
+      setShowDiary(true);
+    }
   };
 
   const handleLogout = () => {
@@ -455,54 +467,66 @@ function App() {
 
   const getGameLevel = (game) => game?.last_level ?? null;
 
-  const lobbyBgImages = [menuImage, dadImage, houseImage];
+  // Function to show congratulations screen when a chapter is completed
+  const handleChapterComplete = (chapterNum) => {
+    setCompletedChapter(chapterNum);
+    setShowCongrats(true);
 
-  const [bgA, setBgA] = useState(0);
-  const [bgB, setBgB] = useState(1);
-  const [showB, setShowB] = useState(false);
-
-  useEffect(() => {
-    if (screen !== "lobby") return;
-
-    const fadeMs = 1200;
-    const holdMs = 1500;
-
-    let i = 0; // A is i, B is i+1
-    let t1, t2;
-
-    const step = () => {
-      if (i >= lobbyBgImages.length - 1) {
-        // we're at the last image -> stay
-        setShowB(false);
-        setBgA(lobbyBgImages.length - 1);
-        return;
+    // Mark chapter as completed
+    setCompletedChapters(prev => {
+      const newSet = new Set(prev);
+      newSet.add(chapterNum);
+      // Store in localStorage
+      if (user) {
+        localStorage.setItem(`completedChapters_${user.id}`, JSON.stringify([...newSet]));
       }
+      return newSet;
+    });
+  };
 
-      setBgA(i);
-      setBgB(i + 1);
-      setShowB(true);
+  // Function to continue after congratulations
+  const handleContinueFromCongrats = () => {
+    setShowCongrats(false);
+    setCompletedChapter(null);
+    setScreen("lobby");
+    setLobbyMode("home");
+  };
 
-      // after fade, lock A to the new image and prepare next step
-      t1 = setTimeout(() => {
-        i = i + 1;
-        setShowB(false);
+  // Function to handle diary completion
+  const handleDiaryComplete = () => {
+    setShowDiary(false);
+    if (user) {
+      localStorage.setItem(`hasSeenDiary_${user.id}`, "true");
+    }
+  };
 
-        t2 = setTimeout(step, holdMs);
-      }, fadeMs);
-    };
+  // Load completed chapters from localStorage when user logs in
+  useEffect(() => {
+    if (user) {
+      const stored = localStorage.getItem(`completedChapters_${user.id}`);
+      if (stored) {
+        try {
+          const chapters = JSON.parse(stored);
+          setCompletedChapters(new Set(chapters));
+        } catch (e) {
+          console.error("Failed to load completed chapters", e);
+        }
+      }
+    }
+  }, [user]);
 
-    step();
-
+  // Expose handleChapterComplete globally for game levels to call
+  useEffect(() => {
+    window.showChapterComplete = handleChapterComplete;
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
+      delete window.showChapterComplete;
     };
-  }, [screen]);
+  }, []);
 
   return (
     <>
-      {/* Main Menu */}
-      {screen === "mainMenu" && (
+      {/* Main Menu + Lobby merged */}
+      {(screen === "mainMenu" || screen === "lobby") && (
         <MainMenu
           onPlay={handlePlayFromMainMenu}
           user={user}
@@ -517,412 +541,53 @@ function App() {
           onLogout={handleLogout}
           chapter={selectedChapter}
           onChapterChange={setSelectedChapter}
+          // Lobby-related props
+          lobbyMode={lobbyMode}
+          onContinueGame={handleContinueGame}
+          onLobbyNewGame={handleLobbyNewGame}
+          onLobbyJoinGame={handleLobbyJoinGame}
+          onLobbyBack={handleLobbyBack}
+          activeGames={activeGames}
+          onRejoinGame={handleRejoinGame}
+          roomIdInput={roomIdInput}
+          onRoomIdInputChange={setRoomIdInput}
+          onJoinSubmit={handleJoin}
+          invitePopup={invitePopup}
+          onInviteDecline={() => setInvitePopup((p) => ({ ...p, open: false }))}
+          onInviteAccept={(rid) => {
+            setInvitePopup((p) => ({ ...p, open: false }));
+            handleAcceptInvite(rid);
+          }}
+          getGameLevel={getGameLevel}
         />
       )}
 
-      {/* Lobby (background only here) */}
-      {/* Lobby (background only here) */}
-      {screen === "lobby" && (
-        <div
-          style={{
-            minHeight: "100vh",
-            width: "100vw",
-            backgroundColor: "#D9D9D9",
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
-          {/* Layer A */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              backgroundImage: `url(${lobbyBgImages[bgA]})`,
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-              backgroundSize: "contain",
-              zIndex: 0,
-            }}
-          />
-
-          {/* Layer B fades in over A */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              backgroundImage: `url(${lobbyBgImages[bgB]})`,
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-              backgroundSize: "contain",
-              opacity: showB ? 1 : 0,
-              transition: "opacity 1200ms ease",
-              zIndex: 1,
-            }}
-          />
-
-          {/* Foreground UI (header + buttons) */}
-          <div style={{ position: "relative", zIndex: 100 }}>
-            {/* Username header */}
-            <h1
-              style={{
-                position: "fixed",
-                top: 16,
-                left: 0,
-                right: 0,
-                textAlign: "center",
-                color: "black",
-                margin: 0,
-                zIndex: 300,
-                pointerEvents: "none",
-              }}
-            >
-              Welcome back, {user?.username}!
-            </h1>
-
-            {/* ✅ Center overlay panels (Continue / Join) - FIXED + CENTERED */}
-            <div
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: 16,
-                boxSizing: "border-box",
-                zIndex: 200, // above images, below popup
-                pointerEvents: lobbyMode === "home" ? "none" : "auto",
-              }}
-            >
-              {/* CONTINUE VIEW */}
-              {lobbyMode === "continue" && (
-                <div
-                  style={{
-                    width: "min(900px, 92vw)",
-                    maxHeight: "70vh",
-                    overflow: "auto",
-                    background: "rgba(0,0,0,0.45)",
-                    padding: 16,
-                    borderRadius: 12,
-                    color: "white",
-                    boxSizing: "border-box",
-                    pointerEvents: "auto",
-                  }}
-                >
-                  <h2 style={{ marginTop: 0 }}>Saved Games</h2>
-
-                  {activeGames.length === 0 ? (
-                    <div>No saved games found.</div>
-                  ) : (
-                    <div style={{ display: "grid", gap: 10 }}>
-                      {activeGames.map((game) => (
-                        <div
-                          key={game.room_id}
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            gap: 12,
-                            padding: 12,
-                            borderRadius: 10,
-                            background: "rgba(255,255,255,0.12)",
-                          }}
-                        >
-                          <div>
-                            <div style={{ fontWeight: 700 }}>
-                              Room {game.room_id}{" "}
-                              {getGameLevel(game)
-                                ? `(Level ${getGameLevel(game)})`
-                                : ""}
-                            </div>
-                            <div style={{ opacity: 0.9 }}>
-                              Opponent: {game.opponent_username || "Waiting"}
-                            </div>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => handleRejoinGame(game.room_id)}
-                            style={{ pointerEvents: "auto" }}
-                          >
-                            Rejoin
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* JOIN GAME VIEW */}
-              {lobbyMode === "join" && (
-                <div
-                  style={{
-                    width: "min(700px, 92vw)",
-                    background: "rgba(0,0,0,0.45)",
-                    padding: 16,
-                    borderRadius: 12,
-                    color: "white",
-                    display: "grid",
-                    gap: 12,
-                    boxSizing: "border-box",
-                    pointerEvents: "auto",
-                  }}
-                >
-                  <h2 style={{ marginTop: 0 }}>Join Game</h2>
-
-                  <input
-                    type="text"
-                    placeholder="Enter Room Code"
-                    value={roomIdInput}
-                    onChange={(e) => setRoomIdInput(e.target.value)}
-                    style={{
-                      width: "100%",
-                      padding: 10,
-                      borderRadius: 10,
-                      border: "none",
-                      outline: "none",
-                      boxSizing: "border-box",
-                    }}
-                  />
-
-                  <button type="button" onClick={handleJoin}>
-                    Join
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Bottom buttons */}
-            <div
-              style={{
-                position: "fixed",
-                left: 0,
-                right: 0,
-                bottom: 0,
-                padding: 12,
-                display: "grid",
-                gap: 12,
-                zIndex: 9999,
-                boxSizing: "border-box",
-              }}
-            >
-              {lobbyMode === "home" ? (
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(4, 1fr)",
-                    gap: 12,
-                  }}
-                >
-                  <button type="button" onClick={handleContinueGame}>
-                    Continue Game
-                  </button>
-
-                  <button type="button" onClick={handleLobbyNewGame}>
-                    New Game
-                  </button>
-
-                  <button type="button" onClick={handleLobbyJoinGame}>
-                    Join Game
-                  </button>
-
-                  <button type="button" onClick={handleLobbyBack}>
-                    Back
-                  </button>
-                </div>
-              ) : (
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr",
-                    gap: 12,
-                  }}
-                >
-                  <button type="button" onClick={handleLobbyBack}>
-                    Back
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* ✅ Invite Popup (full-screen fixed + centered) */}
-          {invitePopup.open && (
-            <div
-              style={{
-                position: "fixed",
-                inset: 0,
-                width: "100vw",
-                height: "100vh",
-                backgroundColor: "rgba(0,0,0,0.6)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: 16,
-                zIndex: 999999,
-              }}
-              onClick={() => setInvitePopup((p) => ({ ...p, open: false }))}
-            >
-              <div
-                style={{
-                  width: "min(520px, 92vw)",
-                  backgroundColor: "white",
-                  padding: 16,
-                  borderRadius: 12,
-                  display: "grid",
-                  gap: 12,
-                  boxSizing: "border-box",
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <h3 style={{ margin: 0 }}>Game Invite</h3>
-
-                <div style={{ color: "black" }}>
-                  <b>{invitePopup.hostUsername || invitePopup.hostUserId}</b>{" "}
-                  invited you to room <b>{invitePopup.roomId}</b>
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 12,
-                    justifyContent: "flex-end",
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setInvitePopup((p) => ({ ...p, open: false }))
-                    }
-                  >
-                    Decline
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const rid = invitePopup.roomId;
-                      setInvitePopup((p) => ({ ...p, open: false }));
-                      handleAcceptInvite(rid);
-                    }}
-                  >
-                    Accept
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Waiting Screen - styled like the rest*/}
+      {/* Waiting Screen - Dark Cinematic Theme */}
       {screen === "waiting" && (
-        <div
-          style={{
-            minHeight: "100vh",
-            width: "100vw",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 16,
-            boxSizing: "border-box",
-            overflow: "hidden",
+        <MainMenu
+          user={user}
+          authMode={authMode}
+          authForm={authForm}
+          authError={authError}
+          onAuthChange={setAuthForm}
+          onAuthSubmit={handleAuthSubmit}
+          onToggleAuthMode={() =>
+            setAuthMode(authMode === "login" ? "register" : "login")
+          }
+          onLogout={handleLogout}
+          chapter={selectedChapter}
+          onChapterChange={setSelectedChapter}
+          waitingScreen={true}
+          roomId={roomId}
+          inviteTarget={inviteTarget}
+          onInviteTargetChange={setInviteTarget}
+          onSendInvite={handleSendInvite}
+          inviteStatus={inviteStatus}
+          onBackToLobby={() => {
+            setScreen("lobby");
+            setLobbyMode("home");
           }}
-        >
-          {/* Center panel */}
-          <div
-            style={{
-              width: "min(700px, 92vw)",
-              maxHeight: "calc(100vh - 96px)",
-              overflow: "auto",
-              background: "rgba(0,0,0,0.45)",
-              padding: 16,
-              borderRadius: 12,
-              color: "white",
-              display: "grid",
-              gap: 12,
-              boxSizing: "border-box",
-            }}
-          >
-            <h2 style={{ margin: 0 }}>Waiting for Player 2...</h2>
-
-            <div style={{ display: "grid", gap: 8 }}>
-              <p style={{ margin: 0, opacity: 0.95 }}>
-                Share this code with your friend:
-              </p>
-              <div
-                style={{
-                  padding: 12,
-                  borderRadius: 10,
-                  background: "rgba(255,255,255,0.12)",
-                  fontSize: 20,
-                  letterSpacing: 2,
-                  textAlign: "center",
-                  wordBreak: "break-word",
-                }}
-              >
-                {roomId}
-              </div>
-            </div>
-
-            <div style={{ display: "grid", gap: 8 }}>
-              <input
-                type="text"
-                placeholder="Invite username"
-                value={inviteTarget}
-                onChange={(e) => setInviteTarget(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: 10,
-                  borderRadius: 10,
-                  border: "none",
-                  outline: "none",
-                  boxSizing: "border-box",
-                }}
-              />
-
-              <button type="button" onClick={handleSendInvite}>
-                Send Invite
-              </button>
-
-              {inviteStatus && (
-                <div style={{ opacity: 0.9 }}>{inviteStatus}</div>
-              )}
-            </div>
-          </div>
-
-          {/* Bottom Back button */}
-          <div
-            style={{
-              position: "fixed",
-              left: 0,
-              right: 0,
-              bottom: 0,
-              padding: 12,
-              boxSizing: "border-box",
-              zIndex: 9999,
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => {
-                // go back to lobby home buttons
-                setScreen("lobby");
-                setLobbyMode("home");
-              }}
-              style={{
-                width: "min(700px, 92vw)",
-                margin: "0 auto",
-                display: "block",
-              }}
-            >
-              Back
-            </button>
-          </div>
-        </div>
+        />
       )}
 
       {/* Game Dialog */}
@@ -966,19 +631,23 @@ function App() {
                 padding: "12px 20px",
                 fontSize: "20px",
                 fontWeight: "bold",
-                backgroundColor: isPaused ? "#4A9A4A" : "#FFD700",
+                background: isPaused
+                  ? "linear-gradient(135deg, #8a77ff 0%, #a68fff 100%)"
+                  : "linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%)",
                 color: "white",
-                border: "4px solid",
-                borderColor: isPaused ? "#2D5A2D" : "#FF8C42",
-                borderRadius: "12px",
+                border: "3px solid",
+                borderColor: isPaused ? "rgba(138, 119, 255, 0.6)" : "rgba(255, 140, 66, 0.6)",
+                borderRadius: "14px",
                 cursor: "pointer",
-                boxShadow:
-                  "0 4px 0 rgba(0,0,0,0.3), 0 6px 15px rgba(0,0,0,0.4)",
-                transition: "all 0.2s ease",
+                boxShadow: isPaused
+                  ? "0 4px 15px rgba(138, 119, 255, 0.4), 0 6px 20px rgba(0,0,0,0.3)"
+                  : "0 4px 15px rgba(255, 107, 53, 0.4), 0 6px 20px rgba(0,0,0,0.3)",
+                transition: "all 0.3s ease",
                 pointerEvents: "auto",
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
+                textShadow: "0 2px 4px rgba(0,0,0,0.3)",
               }}
             >
               <span style={{ fontSize: "24px" }}>{isPaused ? "▶️" : "⏸️"}</span>
@@ -991,18 +660,19 @@ function App() {
                 padding: "12px 20px",
                 fontSize: "20px",
                 fontWeight: "bold",
-                backgroundColor: "#3498DB",
+                background: "linear-gradient(135deg, #6a5acd 0%, #7b68ee 100%)",
                 color: "white",
-                border: "4px solid #1F6FA3",
-                borderRadius: "12px",
+                border: "3px solid rgba(106, 90, 205, 0.6)",
+                borderRadius: "14px",
                 cursor: "pointer",
                 boxShadow:
-                  "0 4px 0 rgba(0,0,0,0.3), 0 6px 15px rgba(0,0,0,0.4)",
-                transition: "all 0.2s ease",
+                  "0 4px 15px rgba(106, 90, 205, 0.4), 0 6px 20px rgba(0,0,0,0.3)",
+                transition: "all 0.3s ease",
                 pointerEvents: "auto",
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
+                textShadow: "0 2px 4px rgba(0,0,0,0.3)",
               }}
             >
               <span>BACK</span>
@@ -1014,18 +684,19 @@ function App() {
                 padding: "12px 20px",
                 fontSize: "20px",
                 fontWeight: "bold",
-                backgroundColor: "#E74C3C",
+                background: "linear-gradient(135deg, #ff4757 0%, #ff6348 100%)",
                 color: "white",
-                border: "4px solid #C0392B",
-                borderRadius: "12px",
+                border: "3px solid rgba(255, 71, 87, 0.6)",
+                borderRadius: "14px",
                 cursor: "pointer",
                 boxShadow:
-                  "0 4px 0 rgba(0,0,0,0.3), 0 6px 15px rgba(0,0,0,0.4)",
-                transition: "all 0.2s ease",
+                  "0 4px 15px rgba(255, 71, 87, 0.4), 0 6px 20px rgba(0,0,0,0.3)",
+                transition: "all 0.3s ease",
                 pointerEvents: "auto",
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
+                textShadow: "0 2px 4px rgba(0,0,0,0.3)",
               }}
             >
               <span style={{ fontSize: "24px" }}>🚪</span>
@@ -1082,6 +753,19 @@ function App() {
         role={role}
         playerCount={playerCount}
       />
+
+      {/* Congratulations Screen */}
+      {showCongrats && (
+        <CongratulationsPage
+          chapterNumber={completedChapter}
+          onContinue={handleContinueFromCongrats}
+        />
+      )}
+
+      {/* Diary Entry - Shows on first login */}
+      {showDiary && (
+        <DiaryEntry onComplete={handleDiaryComplete} />
+      )}
     </>
   );
 }

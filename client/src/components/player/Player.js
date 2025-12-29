@@ -27,12 +27,14 @@ export default class Player {
       otherPlayer = null,
       role = "client",
       modelScale = 1,
+      chapter = 1,
     } = options;
 
     this.network = network;
     this.otherPlayer = otherPlayer;
     this.role = role;
     this.modelScale = modelScale;
+    this.chapterNumber = chapter;
 
     // Root group that represents the player (position + rotation live here)
     this.mesh = new THREE.Group();
@@ -82,6 +84,7 @@ export default class Player {
     // Checkpoint flags
     this._reachedLevel2 = false;
     this._reachedLevel3 = false;
+    this._chapterComplete = false;
 
     // Input
     this.input = new PlayerInput();

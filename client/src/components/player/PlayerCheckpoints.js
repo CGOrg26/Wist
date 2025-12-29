@@ -37,6 +37,27 @@ export function handleCheckpointsAndRespawn(player, newPos) {
     });
   }
 
+  // ───── Chapter Complete Zone ─────
+  // When player reaches the end of level 3 (far negative Z), trigger chapter completion
+  // Different thresholds for different chapters
+  const chapterNumber = player.chapterNumber || 1;
+  const CHAPTER_COMPLETE_THRESHOLDS = {
+    1: -220,  // Chapter 1: Trigger after level 3's last platform (~-210)
+    2: -245,  // Chapter 2: Trigger after passing the door and exit platform (~-244)
+  };
+  const CHAPTER_COMPLETE_Z = CHAPTER_COMPLETE_THRESHOLDS[chapterNumber] || -220;
+
+  if (currentZ < CHAPTER_COMPLETE_Z && !player._chapterComplete) {
+    player._chapterComplete = true;
+
+    console.log('🎉 Chapter Complete! Z position:', currentZ, 'Chapter:', chapterNumber);
+
+    // Trigger the congratulations screen
+    if (typeof window.showChapterComplete === 'function') {
+      window.showChapterComplete(chapterNumber);
+    }
+  }
+
   // ───── Fall detection ─────
   if (newPos.y < PLAYER_LIMITS.FALL_LIMIT) {
     network.sendPuzzleUpdate({

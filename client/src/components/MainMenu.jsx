@@ -21,6 +21,30 @@ export default function MainMenu({
   onLogout,
   chapter,
   onChapterChange,
+  completedChapters,
+  // Lobby-related props
+  lobbyMode,
+  onContinueGame,
+  onLobbyNewGame,
+  onLobbyJoinGame,
+  onLobbyBack,
+  activeGames,
+  onRejoinGame,
+  roomIdInput,
+  onRoomIdInputChange,
+  onJoinSubmit,
+  invitePopup,
+  onInviteDecline,
+  onInviteAccept,
+  getGameLevel,
+  // Waiting screen props
+  waitingScreen,
+  roomId,
+  inviteTarget,
+  onInviteTargetChange,
+  onSendInvite,
+  inviteStatus,
+  onBackToLobby,
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [memoryPhase, setMemoryPhase] = useState(0);
@@ -61,12 +85,13 @@ export default function MainMenu({
   const menuItems = useMemo(() => {
     if (!user) return [];
     const list = [];
-    if (onPlay) list.push({ key: "continue", label: "Continue Game", onClick: onPlay });
-    if (onNewGame) list.push({ key: "new", label: "New Game", onClick: onNewGame });
-    if (onJoinGame) list.push({ key: "join", label: "Join Game", onClick: onJoinGame });
-    if (onBack) list.push({ key: "back", label: "Back", onClick: onBack });
+    // Use lobby handlers instead of the old ones
+    if (onContinueGame) list.push({ key: "continue", label: "Continue Game", onClick: onContinueGame });
+    if (onLobbyNewGame) list.push({ key: "new", label: "New Game", onClick: onLobbyNewGame });
+    if (onLobbyJoinGame) list.push({ key: "join", label: "Join Game", onClick: onLobbyJoinGame });
+    if (onLobbyBack) list.push({ key: "back", label: "Back", onClick: onLobbyBack });
     return list;
-  }, [user, onPlay, onNewGame, onJoinGame, onBack]);
+  }, [user, onContinueGame, onLobbyNewGame, onLobbyJoinGame, onLobbyBack]);
 
   useEffect(() => {
     if (!user || menuItems.length === 0) return;
@@ -261,7 +286,7 @@ export default function MainMenu({
           onClick={() => onChapterChange(1)}
         >
           <span className="pill-num">01</span>
-          <span className="pill-name">Innocence</span>
+          <span className="pill-name">Denial</span>
         </button>
         <button
           className={`pill elevated ${chapter === 2 ? "active" : ""}`}
@@ -290,6 +315,177 @@ export default function MainMenu({
           ))}
         </div>
       </nav>
+
+      {/* Waiting Screen Overlay */}
+      {waitingScreen && (
+        <div className="waiting-screen-overlay">
+          <div className="waiting-panel elevated">
+            {/* Animated waiting indicator */}
+            <div className="waiting-indicator">
+              <div className="waiting-pulse-ring"></div>
+              <div className="waiting-pulse-ring delay-1"></div>
+              <div className="waiting-pulse-ring delay-2"></div>
+              <div className="waiting-icon">⏳</div>
+            </div>
+
+            <h2 className="waiting-title">Waiting for Player 2</h2>
+            <p className="waiting-subtitle">Share the room code or invite a friend to begin</p>
+
+            {/* Room Code Display */}
+            <div className="room-code-section">
+              <div className="room-code-label">Room Code</div>
+              <div className="room-code-display-box elevated">
+                <span className="room-code-value">{roomId}</span>
+                <div className="room-code-glow"></div>
+              </div>
+              <div className="room-code-hint">📋 Share this code with your friend</div>
+            </div>
+
+            {/* Divider */}
+            <div className="waiting-divider">
+              <div className="divider-line"></div>
+              <span className="divider-text">OR</span>
+              <div className="divider-line"></div>
+            </div>
+
+            {/* Invite Section */}
+            <div className="invite-section-wrapper">
+              <div className="invite-section-label">Direct Invite</div>
+              <div className="invite-input-wrapper">
+                <input
+                  className="waiting-input elevated"
+                  type="text"
+                  placeholder="Enter username..."
+                  value={inviteTarget || ""}
+                  onChange={(e) => onInviteTargetChange && onInviteTargetChange(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && onSendInvite && onSendInvite()}
+                />
+                <button
+                  className="waiting-invite-btn elevated"
+                  type="button"
+                  onClick={() => onSendInvite && onSendInvite()}
+                >
+                  <span className="invite-btn-icon">✉️</span>
+                  <span className="invite-btn-text">Send</span>
+                </button>
+              </div>
+
+              {inviteStatus && (
+                <div className="invite-status-message">
+                  ✓ {inviteStatus}
+                </div>
+              )}
+            </div>
+
+            {/* Back Button */}
+            <button
+              className="waiting-back-btn"
+              type="button"
+              onClick={() => onBackToLobby && onBackToLobby()}
+            >
+              ← Back to Lobby
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Lobby overlay panels */}
+      {lobbyMode && lobbyMode !== "home" && !waitingScreen && (
+        <div className="lobby-center-panels" style={{ pointerEvents: "auto" }}>
+          {/* CONTINUE VIEW */}
+          {lobbyMode === "continue" && (
+            <div className="lobby-panel elevated">
+              <h2 className="lobby-panel-title">Saved Games</h2>
+
+              {!activeGames || activeGames.length === 0 ? (
+                <div className="lobby-empty-message">No saved games found.</div>
+              ) : (
+                <div className="saved-games-list">
+                  {activeGames.map((game) => (
+                    <div key={game.room_id} className="saved-game-item">
+                      <div className="game-info">
+                        <div className="game-room">
+                          Room {game.room_id}{" "}
+                          {getGameLevel && getGameLevel(game)
+                            ? `(Level ${getGameLevel(game)})`
+                            : ""}
+                        </div>
+                        <div className="game-opponent">
+                          Opponent: {game.opponent_username || "Waiting"}
+                        </div>
+                      </div>
+
+                      <button
+                        className="menu-btn lobby-action-btn elevated"
+                        type="button"
+                        onClick={() => onRejoinGame && onRejoinGame(game.room_id)}
+                      >
+                        <span className="btn-text">Rejoin</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* JOIN GAME VIEW */}
+          {lobbyMode === "join" && (
+            <div className="lobby-panel elevated">
+              <h2 className="lobby-panel-title">Join Game</h2>
+
+              <input
+                className="auth-input elevated"
+                type="text"
+                placeholder="Enter Room Code"
+                value={roomIdInput || ""}
+                onChange={(e) => onRoomIdInputChange && onRoomIdInputChange(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && onJoinSubmit && onJoinSubmit()}
+              />
+
+              <button
+                className="menu-btn auth-btn elevated"
+                type="button"
+                onClick={() => onJoinSubmit && onJoinSubmit()}
+              >
+                <span className="btn-text">Join</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Invite Popup */}
+      {invitePopup && invitePopup.open && (
+        <div className="invite-popup-overlay" onClick={onInviteDecline}>
+          <div className="invite-popup-panel elevated" onClick={(e) => e.stopPropagation()}>
+            <h3 className="invite-popup-title">Game Invite</h3>
+
+            <div className="invite-popup-message">
+              <b>{invitePopup.hostUsername || invitePopup.hostUserId}</b>{" "}
+              invited you to room <b>{invitePopup.roomId}</b>
+            </div>
+
+            <div className="invite-popup-actions">
+              <button
+                className="auth-toggle"
+                type="button"
+                onClick={onInviteDecline}
+              >
+                Decline
+              </button>
+
+              <button
+                className="menu-btn elevated"
+                type="button"
+                onClick={() => onInviteAccept && onInviteAccept(invitePopup.roomId)}
+              >
+                <span className="btn-text">Accept</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="cinematic-vignette"></div>
     </div>
