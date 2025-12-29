@@ -9,6 +9,7 @@ import { handleCheckpointsAndRespawn } from "./PlayerCheckpoints.js";
 export default class Player {
   constructor(scene, platforms, options = {}) {
     this.platforms = platforms;
+    this.scene = scene;
 
     const {
       modelUrl = null,
@@ -67,6 +68,16 @@ export default class Player {
     this.onGround = false;
     this.lastGroundObject = null;
     this.breakCooldown = new Set();
+    this.sinkingObjects = new Set();
+    this.fragments = [];
+    this.breakAnimations = [];
+    this.doorAnimations = new Set();
+    this.activeSwitch = null;
+    this.checkpointCooldownUntil = 0;
+    this.hazardCooldownUntil = 0;
+    this.transition = null;
+    this.activeLevel = 1;
+    this.breakGroupCooldowns = new Map();
 
     // Checkpoint flags
     this._reachedLevel2 = false;
@@ -83,6 +94,48 @@ export default class Player {
     this.groundEpsilon = PLAYER_COLLISION.GROUND_EPSILON;
 
     this.raycaster = new THREE.Raycaster();
+  }
+
+  startTransition(target, options = {}) {
+    if (!target) return;
+    const { duration = 0.8, height = 6 } = options;
+    const start = this.mesh?.position?.clone
+      ? this.mesh.position.clone()
+      : new THREE.Vector3();
+    const end = target.clone ? target.clone() : new THREE.Vector3(target.x, target.y, target.z);
+
+    this.transition = {
+      start,
+      end,
+      duration: Math.max(0.1, duration),
+      height: Math.max(0, height),
+      elapsed: 0,
+    };
+
+    if (this.velocity?.set) this.velocity.set(0, 0, 0);
+    this.onGround = false;
+  }
+
+  updateTransition(delta) {
+    if (!this.transition) return false;
+
+    const t = Math.min(1, (this.transition.elapsed + delta) / this.transition.duration);
+    this.transition.elapsed += delta;
+
+    const ease = 1 - Math.pow(1 - t, 3);
+    const next = this.transition.start.clone().lerp(this.transition.end, ease);
+    const jump = Math.sin(Math.PI * t) * this.transition.height;
+    next.y += jump;
+    this.mesh.position.copy(next);
+    this.onGround = false;
+
+    if (t >= 1) {
+      this.mesh.position.copy(this.transition.end);
+      this.transition = null;
+      return false;
+    }
+
+    return true;
   }
 
   loadModel(url) {
@@ -161,28 +214,376 @@ export default class Player {
     this.raycaster.set(origin, direction.normalize());
     const hits = this.raycaster.intersectObjects(this.platforms, false);
     if (hits.length === 0) return null;
-    const hit = hits[0];
+    const hit = hits.find((h) => !h.object?.userData?.isTrigger);
+    if (!hit) return null;
     return hit.distance <= maxDistance ? hit : null;
   }
 
   breakObject(obj) {
-    if (!obj || !obj.userData?.id) return;
+    if (!obj || !obj.userData?.id) return false;
+    if (obj.userData.broken || obj.userData.breaking) return false;
+    if (obj.userData.breakGroup) {
+      const group = obj.userData.breakGroup;
+      const now = Date.now();
+      const until = this.breakGroupCooldowns.get(group);
+      if (typeof until === "number" && now < until) return false;
+      const groupBreaking = this.platforms.some(
+        (mesh) =>
+          mesh &&
+          mesh !== obj &&
+          mesh.userData?.breakGroup === group &&
+          mesh.userData.breaking
+      );
+      if (groupBreaking) return false;
+    }
+    if (obj.userData.breakGroup) {
+      const group = obj.userData.breakGroup;
+      const groupBreaking = this.platforms.some(
+        (mesh) =>
+          mesh &&
+          mesh !== obj &&
+          mesh.userData?.breakGroup === group &&
+          mesh.userData.breaking
+      );
+      if (groupBreaking) return;
+    }
 
-    // Hide + disable collisions by moving far away (simple & safe)
-    obj.visible = false;
-    obj.userData.broken = true;
-    obj.position.set(99999, 99999, 99999);
+    const hitsRequired = Number(obj.userData.breakHitsRequired) || 1;
+    if (hitsRequired > 1) {
+      if (!obj.userData.breakHitsRemaining)
+        obj.userData.breakHitsRemaining = hitsRequired;
+      const now = Date.now();
+      const last = obj.userData.lastHitAt || 0;
+      if (now - last < 250) return;
+      obj.userData.lastHitAt = now;
+      obj.userData.breakHitsRemaining -= 1;
+      if (obj.userData.breakHitsRemaining > 0) {
+        return;
+      }
+    }
 
-    // Sync to client
+    if (!obj.userData.breaking) {
+      obj.userData.breaking = true;
+      const mat = obj.material;
+      if (mat) mat.transparent = true;
+      const animDuration =
+        typeof obj.userData?.breakAnimDuration === "number"
+          ? obj.userData.breakAnimDuration
+          : 0.6;
+      if (obj.userData.breakGroup) {
+        this.breakGroupCooldowns.set(
+          obj.userData.breakGroup,
+          Date.now() + Math.ceil(animDuration * 1000)
+        );
+      }
+      this.breakAnimations.push({
+        mesh: obj,
+        ttl: animDuration,
+        startTtl: animDuration,
+        startScale: obj.scale.clone(),
+      });
+      this.spawnBreakFragments(obj);
+      // Sync to client after the local break animation finishes
+      if (this.network) {
+        setTimeout(() => {
+          this.network.sendObjectUpdate(obj.userData.id, {
+            broken: true,
+            x: obj.position.x,
+            y: obj.position.y,
+            z: obj.position.z,
+            visible: false,
+            updatedAt: Date.now(),
+          });
+        }, Math.max(0, animDuration * 1000));
+      }
+    }
+    return true;
+  }
+
+  setSwitchState(switchObj, isActive) {
+    if (!switchObj) return;
+    if (!!switchObj.userData.active === isActive) return;
+
+    const linkedDoorId = switchObj.userData?.linkedDoorId;
+    const door = this.platforms.find(
+      (obj) => obj?.userData?.id === linkedDoorId
+    );
+
+    switchObj.userData.active = isActive;
+    if (door) {
+      const closedY =
+        door.userData?.initialState?.position?.y ?? door.position.y;
+      const openY =
+        typeof door.userData?.openY === "number" ? door.userData.openY : 16;
+      const targetY = isActive ? openY : closedY;
+
+      door.userData.opened = isActive;
+      door.userData.openTargetY = targetY;
+      door.userData.opening = true;
+      this.doorAnimations.add(door);
+    }
+
     if (this.network) {
-      this.network.sendObjectUpdate(obj.userData.id, {
-        broken: true,
-        x: obj.position.x,
-        y: obj.position.y,
-        z: obj.position.z,
-        visible: false,
+      this.network.sendObjectUpdate(switchObj.userData.id, {
+        active: isActive,
+      });
+      if (linkedDoorId) {
+        this.network.sendObjectUpdate(linkedDoorId, {
+          opened: isActive,
+          openTargetY: door ? door.userData.openTargetY : undefined,
+        });
+      }
+    }
+  }
+
+  updateDoorAnimations(delta) {
+    if (this.doorAnimations.size === 0) return;
+
+    this.doorAnimations.forEach((door) => {
+      const targetY =
+        typeof door.userData?.openTargetY === "number"
+          ? door.userData.openTargetY
+          : door.position.y;
+      const speed =
+        typeof door.userData?.openSpeed === "number" ? door.userData.openSpeed : 2.5;
+      const t = 1 - Math.exp(-speed * delta);
+      const nextY = door.position.y + (targetY - door.position.y) * t;
+      door.position.y = nextY;
+
+      if (Math.abs(door.position.y - targetY) <= 0.02) {
+        door.position.y = targetY;
+        door.userData.opening = false;
+        this.doorAnimations.delete(door);
+      }
+    });
+  }
+
+  checkBreakOnTouch() {
+    if (this.role !== "host") return;
+    const playerBox = new THREE.Box3().setFromObject(this.collider);
+    let closest = null;
+    let closestDist = Infinity;
+    this.platforms.forEach((obj) => {
+      if (!obj?.userData?.breakOnTouch) return;
+      if (!obj?.userData?.isBreakable) return;
+      if (
+        typeof obj.userData.levelIndex === "number" &&
+        typeof this.activeLevel === "number" &&
+        obj.userData.levelIndex !== this.activeLevel
+      )
+        return;
+      if (obj.userData.onlyMomBreaks && this.role !== "host") return;
+      if (obj.userData.broken || obj.userData.breaking) return;
+      if (obj.userData.breakGroup) {
+        const group = obj.userData.breakGroup;
+        const groupBreaking = this.platforms.some(
+          (mesh) => mesh?.userData?.breakGroup === group && mesh.userData.breaking
+        );
+        if (groupBreaking) return;
+      }
+      const objBox = new THREE.Box3().setFromObject(obj);
+      objBox.expandByScalar(0.2);
+      if (!playerBox.intersectsBox(objBox)) return;
+      const dist = this.mesh.position.distanceTo(obj.position);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closest = obj;
+      }
+    });
+    if (closest) this.breakObject(closest);
+  }
+
+  checkLevelCheckpoints() {
+    const now = Date.now();
+    if (now < this.checkpointCooldownUntil) return;
+
+    const playerBox = new THREE.Box3().setFromObject(this.collider);
+    for (const obj of this.platforms) {
+      const level = obj?.userData?.levelCheckpoint;
+      if (!level) continue;
+      if (obj.userData.checkpointTriggered) continue;
+      if (obj.userData.requireGround && !this.onGround) continue;
+      const objBox = new THREE.Box3().setFromObject(obj);
+      if (playerBox.intersectsBox(objBox)) {
+        obj.userData.checkpointTriggered = true;
+        this.checkpointCooldownUntil = now + 500;
+        this.activeLevel = level;
+        if (this.network) {
+          this.network.sendPuzzleUpdate({
+            levelReached: level,
+          });
+        }
+        return;
+      }
+    }
+  }
+
+  spawnBreakFragments(obj) {
+    if (!this.scene || !obj) return;
+
+    const color =
+      obj.material && obj.material.color
+        ? obj.material.color
+        : new THREE.Color(0x888888);
+    const pieceGeometry = new THREE.BoxGeometry(0.6, 0.6, 0.6);
+
+    const fragmentCount = Math.max(
+      1,
+      Number(obj.userData?.breakFragmentCount) || 12
+    );
+    const spread = Number(obj.userData?.breakFragmentSpread) || 2;
+    const velocityScale = Number(obj.userData?.breakFragmentVelocity) || 6;
+
+    for (let i = 0; i < fragmentCount; i += 1) {
+      const scale = 0.5 + Math.random() * 0.7;
+      const pieceMaterial = new THREE.MeshStandardMaterial({
+        color,
+        transparent: true,
+        opacity: 1,
+      });
+      const piece = new THREE.Mesh(pieceGeometry, pieceMaterial);
+      piece.scale.set(scale, scale, scale);
+      piece.position.copy(obj.position);
+      piece.position.x += (Math.random() - 0.5) * spread * 2;
+      piece.position.y += Math.random() * spread * 0.6 + 1;
+      piece.position.z += (Math.random() - 0.5) * spread * 2;
+      piece.rotation.set(
+        Math.random() * Math.PI,
+        Math.random() * Math.PI,
+        Math.random() * Math.PI
+      );
+      piece.castShadow = true;
+      piece.receiveShadow = true;
+      this.scene.add(piece);
+
+      this.fragments.push({
+        mesh: piece,
+        velocity: new THREE.Vector3(
+          (Math.random() - 0.5) * velocityScale,
+          Math.random() * velocityScale + velocityScale * 0.4,
+          (Math.random() - 0.5) * velocityScale
+        ),
+        rotVelocity: new THREE.Vector3(
+          (Math.random() - 0.5) * 6,
+          (Math.random() - 0.5) * 6,
+          (Math.random() - 0.5) * 6
+        ),
+        ttl: 1.4,
+        startTtl: 1.4,
       });
     }
+  }
+
+  updateFragments(delta) {
+    if (this.fragments.length === 0) return;
+    const gravity = -18;
+
+    this.fragments = this.fragments.filter((frag) => {
+      frag.velocity.y += gravity * delta;
+      frag.mesh.position.addScaledVector(frag.velocity, delta);
+      frag.mesh.rotation.x += frag.rotVelocity.x * delta;
+      frag.mesh.rotation.y += frag.rotVelocity.y * delta;
+      frag.mesh.rotation.z += frag.rotVelocity.z * delta;
+      frag.ttl -= delta;
+      const alpha = Math.max(0, frag.ttl / frag.startTtl);
+      if (frag.mesh.material) frag.mesh.material.opacity = alpha;
+      if (frag.ttl <= 0) {
+        this.scene.remove(frag.mesh);
+        return false;
+      }
+      return true;
+    });
+  }
+
+  updateBreakAnimations(delta) {
+    if (this.breakAnimations.length === 0) return;
+    this.breakAnimations = this.breakAnimations.filter((anim) => {
+      anim.ttl -= delta;
+      const t = Math.max(0, anim.ttl / anim.startTtl);
+      const mesh = anim.mesh;
+      if (mesh.material) mesh.material.opacity = t;
+      const scale = anim.startScale.clone().multiplyScalar(t);
+      mesh.scale.copy(scale);
+      if (anim.ttl <= 0) {
+        mesh.visible = false;
+        mesh.userData.broken = true;
+        mesh.userData.breaking = false;
+        mesh.position.set(99999, 99999, 99999);
+        if (this.network && mesh.userData?.id) {
+          this.network.sendObjectUpdate(mesh.userData.id, {
+            broken: true,
+            x: mesh.position.x,
+            y: mesh.position.y,
+            z: mesh.position.z,
+            visible: false,
+          });
+        }
+        return false;
+      }
+      return true;
+    });
+  }
+
+  checkHazardHit() {
+    const now = Date.now();
+    if (now < this.hazardCooldownUntil) return false;
+    const isDaughter = this.role !== "host";
+    if (!isDaughter) return false;
+
+    const playerBox = new THREE.Box3().setFromObject(this.collider);
+    for (const obj of this.platforms) {
+      if (!obj?.userData?.isHazard) continue;
+      const hazardBox = new THREE.Box3().setFromObject(obj);
+      hazardBox.expandByScalar(0.15);
+      if (playerBox.intersectsBox(hazardBox)) {
+        this.hazardCooldownUntil = now + 500;
+        if (this.network) {
+          this.network.sendPuzzleUpdate({
+            respawnToken: now,
+            respawnLevel: typeof this.activeLevel === "number" ? this.activeLevel : 1,
+          });
+        }
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  updateSinkingObjects(delta) {
+    if (this.sinkingObjects.size === 0) return;
+
+    this.sinkingObjects.forEach((obj) => {
+      const targetY =
+        typeof obj.userData.sinkTargetY === "number"
+          ? obj.userData.sinkTargetY
+          : obj.position.y - 4;
+      const speed =
+        typeof obj.userData.sinkSpeed === "number" ? obj.userData.sinkSpeed : 6;
+
+      const t = 1 - Math.exp(-speed * delta);
+      const nextY = obj.position.y + (targetY - obj.position.y) * t;
+      if (Math.abs(nextY - obj.position.y) > 0.001) {
+        obj.position.y = nextY;
+        if (this.network && obj.userData?.id) {
+          this.network.sendObjectUpdate(obj.userData.id, { y: nextY });
+        }
+      }
+
+      if (Math.abs(obj.position.y - targetY) <= 0.02) {
+        obj.userData.sunk = true;
+        obj.userData.sinking = false;
+        obj.position.y = targetY;
+        if (this.network && obj.userData?.id) {
+          this.network.sendObjectUpdate(obj.userData.id, {
+            y: obj.position.y,
+            sunk: true,
+            sinking: false,
+          });
+        }
+        this.sinkingObjects.delete(obj);
+      }
+    });
   }
 
   update(delta) {
@@ -247,8 +648,23 @@ export default class Player {
 
       if (hitX) {
         const hitObj = hitX.object;
+        const isSinkable = !!hitObj?.userData?.isSinkable;
+        const isSunk = !!hitObj?.userData?.sunk;
+        const isMom = this.role === "host";
+        const allowPassThrough = isSinkable && isMom && !isSunk;
+        const isBreakable = !!hitObj?.userData?.isBreakable;
+        const onlyMom = !!hitObj?.userData?.onlyMomBreaks;
+        const canBreak = isBreakable && (!onlyMom || this.role === "host");
 
-        if (hitObj.userData && hitObj.userData.isPushable) {
+        if (allowPassThrough) {
+          // Let mom walk onto the sinkable before it sinks
+        } else if (canBreak) {
+          const didBreak = this.breakObject(hitObj);
+          if (!didBreak) {
+            deltaPos.x = 0;
+            this.velocity.x = 0;
+          }
+        } else if (hitObj.userData && hitObj.userData.isPushable) {
           const onlyHost = !!hitObj.userData.onlyHostCanPush;
           const canPush = !onlyHost || this.role === "host";
 
@@ -288,8 +704,23 @@ export default class Player {
 
       if (hitZ) {
         const hitObj = hitZ.object;
+        const isSinkable = !!hitObj?.userData?.isSinkable;
+        const isSunk = !!hitObj?.userData?.sunk;
+        const isMom = this.role === "host";
+        const allowPassThrough = isSinkable && isMom && !isSunk;
+        const isBreakable = !!hitObj?.userData?.isBreakable;
+        const onlyMom = !!hitObj?.userData?.onlyMomBreaks;
+        const canBreak = isBreakable && (!onlyMom || this.role === "host");
 
-        if (hitObj.userData && hitObj.userData.isPushable) {
+        if (allowPassThrough) {
+          // Let mom walk onto the sinkable before it sinks
+        } else if (canBreak) {
+          const didBreak = this.breakObject(hitObj);
+          if (!didBreak) {
+            deltaPos.z = 0;
+            this.velocity.z = 0;
+          }
+        } else if (hitObj.userData && hitObj.userData.isPushable) {
           const onlyHost = !!hitObj.userData.onlyHostCanPush;
           const canPush = !onlyHost || this.role === "host";
 
@@ -358,17 +789,26 @@ export default class Player {
 
     if (hitDown && this.velocity.y <= 0) {
       const groundY = hitDown.point.y;
-      newPos.y = groundY + this.playerHalfHeight;
-      this.velocity.y = 0;
-      this.onGround = true;
-
       const groundObj = hitDown.object;
+      const isSinkable = !!groundObj?.userData?.isSinkable;
+      const isSunk = !!groundObj?.userData?.sunk;
+      const isMom = this.role === "host";
+      const isDaughter = !isMom;
+
+      if (!(isSinkable && isMom && !isSunk)) {
+        newPos.y = groundY + this.playerHalfHeight;
+        this.velocity.y = 0;
+        this.onGround = true;
+      }
+
       this.lastGroundObject = groundObj;
+      if (this.onGround && typeof groundObj?.userData?.levelIndex === "number") {
+        this.activeLevel = groundObj.userData.levelIndex;
+      }
 
       const isBreakable = !!groundObj?.userData?.isBreakable;
       const onlyMom = !!groundObj?.userData?.onlyMomBreaks;
-
-      const isMom = this.role === "host";
+      const onlyDaughter = !!groundObj?.userData?.onlyDaughterSinks;
 
       const canBreak = isBreakable && (!onlyMom || isMom);
       if (canBreak) {
@@ -380,6 +820,25 @@ export default class Player {
           setTimeout(() => {
             this.breakObject(groundObj);
           }, 150);
+        }
+      }
+
+      const canSink = isSinkable && (!onlyDaughter || isDaughter);
+      if (canSink && !groundObj.userData?.sunk && !groundObj.userData?.sinking) {
+        groundObj.userData.sinking = true;
+        this.sinkingObjects.add(groundObj);
+      }
+
+      if (
+        groundObj?.userData?.levelCheckpoint &&
+        !groundObj.userData.checkpointTriggered
+      ) {
+        groundObj.userData.checkpointTriggered = true;
+        if (this.network) {
+          this.network.sendPuzzleUpdate({
+            level: groundObj.userData.levelCheckpoint,
+            forceLevel: true,
+          });
         }
       }
     }
@@ -414,6 +873,45 @@ export default class Player {
 
     // Apply position
     this.mesh.position.copy(newPos);
+
+    // Switch handling (daughter only)
+    if (this.role !== "host") {
+      const playerBox = new THREE.Box3().setFromObject(this.collider);
+      let hitSwitch = null;
+      this.platforms.forEach((obj) => {
+        if (!obj?.userData?.isSwitch) return;
+        const switchBox = new THREE.Box3().setFromObject(obj);
+        switchBox.expandByScalar(0.3);
+        if (playerBox.intersectsBox(switchBox)) {
+          hitSwitch = obj;
+        }
+      });
+
+      if (hitSwitch) {
+        this.setSwitchState(hitSwitch, true);
+        this.activeSwitch = hitSwitch;
+      } else if (this.activeSwitch) {
+        this.setSwitchState(this.activeSwitch, false);
+        this.activeSwitch = null;
+      }
+    }
+
+    // Per-frame updates
+    this.updateFragments(delta);
+    this.updateSinkingObjects(delta);
+    this.updateBreakAnimations(delta);
+    this.updateDoorAnimations(delta);
+    this.checkBreakOnTouch();
+    this.checkLevelCheckpoints();
+
+    // Ensure any opening door animates even if the update arrived early
+    this.platforms.forEach((obj) => {
+      if (obj?.userData?.isDoor && obj.userData.opening) {
+        this.doorAnimations.add(obj);
+      }
+    });
+
+    if (this.checkHazardHit()) return;
   }
 
   dispose() {

@@ -20,6 +20,7 @@ export function handleCheckpointsAndRespawn(player, newPos) {
   // ───── Checkpoint: Level 2  ─────
   if (currentZ < PLAYER_LIMITS.LEVEL2_Z_THRESHOLD && !player._reachedLevel2) {
     player._reachedLevel2 = true;
+    player.activeLevel = 2;
 
     network.sendPuzzleUpdate({
       levelReached: 2,
@@ -29,6 +30,7 @@ export function handleCheckpointsAndRespawn(player, newPos) {
   // ───── Checkpoint: Level 3  ─────
   if (currentZ < PLAYER_LIMITS.LEVEL3_Z_THRESHOLD && !player._reachedLevel3) {
     player._reachedLevel3 = true;
+    player.activeLevel = 3;
 
     network.sendPuzzleUpdate({
       levelReached: 3,
@@ -39,6 +41,7 @@ export function handleCheckpointsAndRespawn(player, newPos) {
   if (newPos.y < PLAYER_LIMITS.FALL_LIMIT) {
     network.sendPuzzleUpdate({
       respawnToken: Date.now(),
+      respawnLevel: typeof player.activeLevel === "number" ? player.activeLevel : 1,
     });
 
     return true;

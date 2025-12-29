@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { getRoleMaterial } from "../../materials/levelMaterial.js";
+import { getRoleMaterial } from "../../../materials/levelMaterial.js";
 // import { buildLevel3Environment } from "./Level3Environment.js";
 
 export function loadLevel3(role) {

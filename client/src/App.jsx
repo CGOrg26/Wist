@@ -45,6 +45,8 @@ function App() {
   const [activeGames, setActiveGames] = useState([]);
   const [inviteTarget, setInviteTarget] = useState("");
   const [inviteStatus, setInviteStatus] = useState("");
+  const [selectedChapter, setSelectedChapter] = useState(1);
+  const [gameChapter, setGameChapter] = useState(1);
 
   // Lobby sub-modes:
   // home => 4 bottom buttons only
@@ -152,6 +154,7 @@ function App() {
         if (puzzleState !== undefined) setPuzzleState(puzzleState);
         if (objects !== undefined) setObjects(objects);
         if (playerPositions !== undefined) setPlayerPositions(playerPositions);
+        if (puzzleState?.chapter) setGameChapter(puzzleState.chapter);
 
         console.log("Room state received:", {
           world,
@@ -164,6 +167,7 @@ function App() {
 
     network.on("puzzleStateChanged", (puzzleState) => {
       setPuzzleState(puzzleState);
+      if (puzzleState?.chapter) setGameChapter(puzzleState.chapter);
     });
 
     network.on("playerLeft", ({ leftPlayerId, players }) => {
@@ -281,7 +285,7 @@ function App() {
       });
       return;
     }
-    network.createGame();
+    network.createGame({ chapter: selectedChapter });
   };
 
   const handleJoin = () => {
@@ -511,6 +515,8 @@ function App() {
             setAuthMode(authMode === "login" ? "register" : "login")
           }
           onLogout={handleLogout}
+          chapter={selectedChapter}
+          onChapterChange={setSelectedChapter}
         />
       )}
 
@@ -936,6 +942,7 @@ function App() {
             puzzleState={puzzleState}
             objects={objects}
             playerPositions={playerPositions}
+            chapter={gameChapter}
           />
 
           {/* Game Controls Overlay */}

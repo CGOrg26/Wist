@@ -1,6 +1,6 @@
-import { loadLevel1 } from "./levels/Level1.js";
-import { loadLevel2 } from "./levels/Level2.js";
-import { loadLevel3 } from "./levels/Level3.js";
+import { loadLevel1 } from "./chapters/Chapter1/Level1.js";
+import { loadLevel2 } from "./chapters/Chapter1/Level2.js";
+import { loadLevel3 } from "./chapters/Chapter1/Level3.js";
 
 export function loadAllLevels(scene, role) {
   let zOffset = 0;

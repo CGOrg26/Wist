@@ -11,7 +11,7 @@ export const PLAYER_COLLISION = {
 
 export const PLAYER_LIMITS = {
   // Trigger respawn on
-  FALL_LIMIT: -50,
+  FALL_LIMIT: -20,
 
   //LEVEL 2 STARTS PAST
   LEVEL2_Z_THRESHOLD: -60,

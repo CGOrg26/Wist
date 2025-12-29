@@ -14,6 +14,7 @@ export default function GameCanvas({
   puzzleState,
   objects,
   playerPositions,
+  chapter,
 }) {
   const containerRef = useRef(null);
 
@@ -30,7 +31,7 @@ export default function GameCanvas({
     platforms: [],
   });
 
-  useThreeSetup({ containerRef, threeRef, network, role });
+  useThreeSetup({ containerRef, threeRef, network, role, chapter });
 
   useRoleSetup({ role, threeRef });
 

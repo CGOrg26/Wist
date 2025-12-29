@@ -59,14 +59,17 @@ function buildWorld() {
   };
 }
 
-function buildDefaultPuzzleState(hostLevel = 1, clientLevel = 1) {
+function buildDefaultPuzzleState(hostLevel = 1, clientLevel = 1, chapter = 1) {
   return {
+    chapter,
     level: Math.min(hostLevel, clientLevel),
     hostLevel,
     clientLevel,
     respawnToken: 0,
+    respawnLevel: null,
   };
 }
+
 
 function buildStateSnapshot(room) {
   return {
@@ -94,7 +97,8 @@ function loadRoomFromDb(roomId) {
   const fallbackLevel = Number(game.last_level) || 1;
 
   const puzzleState =
-    state?.puzzleState || buildDefaultPuzzleState(fallbackLevel, fallbackLevel);
+    state?.puzzleState ||
+    buildDefaultPuzzleState(fallbackLevel, fallbackLevel, 1);
   const objects = state?.objects || { ...world.blocks };
   const playerPositions = state?.playerPositions || {
     host: null,
@@ -227,7 +231,7 @@ io.on("connection", (socket) => {
   });
 
   // ───────────── CREATE GAME (host) ─────────────
-  socket.on("createGame", ({ userId, inviteUsername } = {}) => {
+  socket.on("createGame", ({ userId, inviteUsername, chapter } = {}) => {
     if (!userId) {
       socket.emit("createError", { message: "Login required" });
       return;
@@ -244,7 +248,8 @@ io.on("connection", (socket) => {
 
     const roomId = createRoomId();
     const world = buildWorld();
-    const puzzleState = buildDefaultPuzzleState(1, 1);
+    const chapterNumber = Number(chapter) === 2 ? 2 : 1;
+    const puzzleState = buildDefaultPuzzleState(1, 1, chapterNumber);
     const objects = { ...world.blocks };
     const playerPositions = {
       host: null,
@@ -496,8 +501,16 @@ io.on("connection", (socket) => {
       updateGameLastLevel(roomId, room.puzzleState.level);
     }
 
+
+    if (typeof puzzleState.chapter === "number") {
+      room.puzzleState.chapter = puzzleState.chapter;
+    }
+
     if (typeof puzzleState.respawnToken !== "undefined") {
       room.puzzleState.respawnToken = puzzleState.respawnToken;
+    }
+    if (typeof puzzleState.respawnLevel === "number") {
+      room.puzzleState.respawnLevel = puzzleState.respawnLevel;
     }
 
     io.to(roomId).emit("puzzleStateChanged", room.puzzleState);

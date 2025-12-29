@@ -198,10 +198,11 @@ export class NetworkClient {
   // ───────────────────────────
   // Outgoing messages
   // ───────────────────────────
-  createGame({ inviteUsername } = {}) {
+  createGame({ inviteUsername, chapter } = {}) {
     this.socket.emit("createGame", {
       userId: this.userId,
       inviteUsername,
+      chapter,
     });
   }
 
