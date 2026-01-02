@@ -2,7 +2,8 @@ import { io } from "socket.io-client";
 
 export class NetworkClient {
   constructor() {
-    this.socket = io("http://localhost:3000");
+    const serverUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    this.socket = io(serverUrl);
 
     // Basic connection / identity
     this.roomId = null;
