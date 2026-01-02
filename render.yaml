@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: wist-server
+    env: node
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: CLIENT_URL
+        fromService:
+          name: wist-client
+          type: web
+          property: url
+
+  - type: web
+    name: wist-client
+    env: static
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: client/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: wist-server
+          type: web
+          property: url
