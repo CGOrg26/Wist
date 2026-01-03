@@ -3,175 +3,152 @@
   height: 100vh;
   position: fixed;
   inset: 0;
-
-  /* ✅ allow scroll if content is taller than screen */
   overflow-x: hidden;
   overflow-y: auto;
-
   display: flex;
   justify-content: center;
-
-  /* ✅ don't vertically center (it causes clipping on short screens) */
   align-items: flex-start;
-
-  /* ✅ breathing room */
   padding: 32px 16px;
-
   z-index: 10000;
 }
 
-/* ✅ Back to Lobby button */
+/* Back to Lobby button */
 .back-lobby-btn {
   position: absolute;
   top: 20px;
   left: 20px;
   z-index: 20;
-
-  padding: 12px 16px;
-  border-radius: 999px;
-  border: 1px solid rgba(138, 119, 255, 0.35);
-  background: rgba(0, 0, 0, 0.35);
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 2px solid rgba(138, 119, 255, 0.4);
+  background: rgba(10, 5, 21, 0.7);
   backdrop-filter: blur(10px);
-
   color: #ffffff;
-  font-weight: 800;
+  font-weight: 700;
+  font-size: 14px;
   letter-spacing: 0.5px;
   cursor: pointer;
-
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .back-lobby-btn:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 215, 0, 0.55);
-  box-shadow: 0 0 18px rgba(138, 119, 255, 0.35);
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 20px rgba(138, 119, 255, 0.4);
+  background: rgba(10, 5, 21, 0.9);
 }
 
 /* Background */
 .congrats-bg {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
 }
 
 .congrats-gradient {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: linear-gradient(
-    135deg,
+    180deg,
     #0a0515 0%,
-    #1a0f2e 25%,
-    #2a1a4a 50%,
-    #1a0f2e 75%,
-    #0a0515 100%
+    #1a0f2e 30%,
+    #2a1a4a 60%,
+    #1a0f2e 100%
   );
 }
 
-.congrats-atmosphere {
-  position: absolute;
+.radial-waves {
+  position: fixed;
   inset: 0;
   background: radial-gradient(
-    ellipse at center,
+    circle at 50% 50%,
     rgba(138, 119, 255, 0.15) 0%,
-    transparent 70%
+    transparent 50%
   );
-  animation: atmospherePulse 6s ease-in-out infinite;
+  animation: wavesPulse 8s ease-in-out infinite;
 }
 
-@keyframes atmospherePulse {
-  0%,
-  100% {
-    opacity: 0.5;
+@keyframes wavesPulse {
+  0%, 100% {
+    opacity: 0.3;
     transform: scale(1);
   }
   50% {
-    opacity: 0.8;
-    transform: scale(1.05);
+    opacity: 0.6;
+    transform: scale(1.1);
   }
 }
 
-/* Confetti */
-.confetti-container {
+/* Floating memory orbs */
+.memory-orbs-container {
   position: absolute;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
-  z-index: 5;
+  z-index: 1;
 }
 
-.confetti-piece {
+.memory-orb {
   position: absolute;
-  top: -20px;
-  border-radius: 2px;
-  animation: confettiFall linear infinite;
-  opacity: 0.9;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(138, 119, 255, 0.4),
+    rgba(255, 107, 53, 0.2) 50%,
+    transparent 70%
+  );
+  filter: blur(8px);
+  animation: orbFloat linear infinite;
+  opacity: 0.6;
 }
 
-@keyframes confettiFall {
+@keyframes orbFloat {
   0% {
-    transform: translateY(-20px) translateX(0) rotateZ(0deg);
-    opacity: 1;
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.6;
+  }
+  80% {
+    opacity: 0.6;
   }
   100% {
-    transform: translateY(100vh) translateX(100px) rotateZ(720deg);
+    transform: translate(calc(var(--random-x, 50) * 1px), calc(var(--random-y, -200) * 1px)) scale(1.5);
     opacity: 0;
   }
 }
 
-/* Fireworks */
-.fireworks-container {
+/* Flying white dots (stars) */
+.stars-container {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 4;
+  overflow: hidden;
+  z-index: 2;
 }
 
-.firework {
+.star {
   position: absolute;
-  width: 4px;
-  height: 4px;
-  animation: fireworkFade 3s ease-out infinite;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+  animation: starFloat linear infinite;
 }
 
-.firework-spark {
-  position: absolute;
-  width: 3px;
-  height: 40px;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(138, 119, 255, 0.6) 50%,
-    transparent 100%
-  );
-  transform-origin: bottom center;
-  animation: sparkBurst 1.2s ease-out infinite;
-  box-shadow: 0 0 8px rgba(138, 119, 255, 0.8);
-}
-
-@keyframes fireworkFade {
-  0%,
-  20% {
-    opacity: 0;
-  }
-  25% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes sparkBurst {
+@keyframes starFloat {
   0% {
-    height: 0;
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
     opacity: 1;
   }
-  50% {
-    height: 50px;
-    opacity: 0.8;
+  90% {
+    opacity: 1;
   }
   100% {
-    height: 10px;
+    transform: translateY(-120vh) translateX(30px);
     opacity: 0;
   }
 }
@@ -181,14 +158,12 @@
   position: relative;
   z-index: 10;
   text-align: center;
-  max-width: 700px;
-  width: min(700px, 100%);
-  padding: 60px 40px;
+  max-width: 800px;
+  width: 100%;
+  padding: 40px 32px;
   opacity: 0;
-  transform: translateY(30px) scale(0.95);
-  transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-
-  /* ✅ center content horizontally */
+  transform: translateY(40px) scale(0.95);
+  transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   margin: 0 auto;
 }
 
@@ -197,124 +172,96 @@
   transform: translateY(0) scale(1);
 }
 
-.congrats-trophy {
-  font-size: 120px;
-  margin-bottom: 30px;
-  animation: trophyBounce 2s ease-in-out infinite;
-  filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6));
+/* Ornate header */
+.completion-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
-@keyframes trophyBounce {
-  0%,
-  100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-20px) scale(1.1);
-  }
-}
-
-.congrats-title {
-  font-size: 72px;
-  font-weight: 900;
-  color: #ffffff;
-  margin: 0 0 40px;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  text-shadow: 0 0 40px rgba(138, 119, 255, 0.8),
-    0 0 80px rgba(138, 119, 255, 0.4), 0 4px 20px rgba(0, 0, 0, 0.8);
-  animation: titleShine 3s ease-in-out infinite;
-}
-
-@keyframes titleShine {
-  0%,
-  100% {
-    text-shadow: 0 0 40px rgba(138, 119, 255, 0.8),
-      0 0 80px rgba(138, 119, 255, 0.4), 0 4px 20px rgba(0, 0, 0, 0.8);
-  }
-  50% {
-    text-shadow: 0 0 60px rgba(255, 107, 53, 0.9),
-      0 0 120px rgba(255, 107, 53, 0.5), 0 4px 20px rgba(0, 0, 0, 0.8);
-  }
-}
-
-.congrats-message {
-  margin-bottom: 50px;
-}
-
-.congrats-text {
-  font-size: 24px;
-  font-weight: 500;
-  color: #c8b8ff;
-  margin: 0 0 12px;
-  letter-spacing: 1px;
-}
-
-.congrats-chapter {
-  font-size: 48px;
-  font-weight: 900;
-  color: #ffffff;
-  margin: 0 0 16px;
-  letter-spacing: 3px;
-  background: linear-gradient(135deg, #8a77ff 0%, #ff6b35 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 4px 12px rgba(138, 119, 255, 0.3);
-  filter: drop-shadow(0 4px 12px rgba(138, 119, 255, 0.3));
-}
-
-.congrats-subtext {
-  font-size: 18px;
-  font-weight: 400;
-  color: #b8a8ff;
-  font-style: italic;
-  margin: 0;
-  opacity: 0.85;
-}
-
-/* Key Collection Animation */
-.key-collection {
-  margin: 40px 0;
-  padding: 30px;
+.header-ornament {
+  width: 80px;
+  height: 2px;
   background: linear-gradient(
-    135deg,
-    rgba(138, 119, 255, 0.15) 0%,
-    rgba(255, 107, 53, 0.15) 100%
+    to right,
+    transparent,
+    rgba(138, 119, 255, 0.6),
+    rgba(255, 215, 0, 0.6)
   );
-  border: 3px solid rgba(138, 119, 255, 0.3);
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
   position: relative;
-  overflow: hidden;
-  opacity: 0;
-  transform: scale(0.9) translateY(20px);
-  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.key-collection.visible {
-  opacity: 1;
-  transform: scale(1) translateY(0);
+.header-ornament.left {
+  background: linear-gradient(
+    to left,
+    rgba(138, 119, 255, 0.6),
+    transparent
+  );
 }
 
-.key-icon {
-  font-size: 80px;
-  animation: keyBounce 2s ease-in-out infinite, keyRotate 4s linear infinite;
-  filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8));
-  margin-bottom: 20px;
+.header-ornament.right {
+  background: linear-gradient(
+    to right,
+    rgba(138, 119, 255, 0.6),
+    transparent
+  );
 }
 
-@keyframes keyBounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-15px);
-  }
+.header-ornament::before,
+.header-ornament::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffd700, #ff8c42);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
 }
 
-@keyframes keyRotate {
+.header-ornament.left::before {
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.header-ornament.right::after {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.chapter-badge {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid rgba(138, 119, 255, 0.5);
+  box-shadow:
+    0 0 20px rgba(138, 119, 255, 0.4),
+    inset 0 0 20px rgba(138, 119, 255, 0.2);
+  animation: ringRotate 20s linear infinite;
+}
+
+.badge-ring::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  animation: ringRotate 15s linear infinite reverse;
+}
+
+@keyframes ringRotate {
   from {
     transform: rotate(0deg);
   }
@@ -323,7 +270,369 @@
   }
 }
 
-.key-shine {
+.badge-number {
+  font-size: 36px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #8a77ff 0%, #ff6b35 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 12px rgba(138, 119, 255, 0.6));
+  z-index: 1;
+}
+
+/* Title */
+.congrats-title {
+  font-size: clamp(40px, 6vw, 64px);
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0 0 24px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 30px rgba(138, 119, 255, 0.6),
+    0 0 60px rgba(138, 119, 255, 0.3),
+    0 4px 20px rgba(0, 0, 0, 0.8);
+  animation: titleGlow 4s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+  0%, 100% {
+    text-shadow:
+      0 0 30px rgba(138, 119, 255, 0.6),
+      0 0 60px rgba(138, 119, 255, 0.3),
+      0 4px 20px rgba(0, 0, 0, 0.8);
+  }
+  50% {
+    text-shadow:
+      0 0 40px rgba(255, 215, 0, 0.7),
+      0 0 80px rgba(255, 140, 66, 0.4),
+      0 4px 20px rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* Message */
+.congrats-message {
+  margin-bottom: 48px;
+}
+
+.congrats-chapter-name {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 900;
+  margin: 0 0 8px;
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c42 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+}
+
+.congrats-subtext {
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 400;
+  color: rgba(200, 184, 255, 0.9);
+  font-style: italic;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+/* Ornate SVG Key */
+.key-collection {
+  position: relative;
+  margin: 48px auto;
+  padding: 40px;
+  max-width: 500px;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 5, 21, 0.6) 0%,
+    rgba(42, 26, 74, 0.4) 100%
+  );
+  border: 2px solid rgba(138, 119, 255, 0.3);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    inset 0 0 40px rgba(138, 119, 255, 0.1);
+  opacity: 0;
+  transform: scale(0.8) translateY(30px);
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.key-collection.visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.ornate-key {
+  display: block;
+  margin: 0 auto 24px;
+  filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.6))
+          drop-shadow(0 0 50px rgba(255, 140, 66, 0.4));
+  animation: keyLevitate 3s ease-in-out infinite;
+}
+
+@keyframes keyLevitate {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(2deg);
+  }
+}
+
+.key-label {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 800;
+  color: #ffd700;
+  text-shadow:
+    0 0 20px rgba(255, 215, 0, 0.8),
+    0 4px 12px rgba(0, 0, 0, 0.6);
+  margin: 0;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.key-particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.key-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, #ffd700, #ff8c42);
+  border-radius: 50%;
+  opacity: 0;
+  animation: particleOrbit 3s ease-in-out infinite;
+  animation-delay: var(--particle-delay);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+}
+
+@keyframes particleOrbit {
+  0%, 100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(60px) scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--particle-angle)) translateX(100px) scale(1);
+  }
+}
+
+/* Progress Path */
+.congrats-progress {
+  margin: 48px 0 40px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s ease;
+}
+
+.congrats-progress.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.progress-label {
+  font-size: clamp(18px, 2.5vw, 24px);
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 32px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+.progress-path {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.path-line {
+  width: 100%;
+  height: 100px;
+  margin-bottom: 20px;
+}
+
+.path-progress {
+  transition: stroke-dashoffset 2s ease;
+}
+
+.keys-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: -60px;
+  position: relative;
+  z-index: 2;
+}
+
+.key-node {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  opacity: 0.4;
+  transition: all 0.6s ease;
+  transition-delay: calc(var(--node-index) * 0.15s);
+}
+
+.key-node.collected {
+  opacity: 1;
+}
+
+.key-node.current {
+  animation: currentNodePulse 2s ease-in-out infinite;
+}
+
+@keyframes currentNodePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+.node-ring {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid rgba(138, 119, 255, 0.3);
+  background: rgba(10, 5, 21, 0.6);
+  backdrop-filter: blur(5px);
+  position: relative;
+  transition: all 0.4s ease;
+}
+
+.key-node.collected .node-ring {
+  border-color: rgba(255, 215, 0, 0.7);
+  background: linear-gradient(
+    135deg,
+    rgba(138, 119, 255, 0.3),
+    rgba(255, 107, 53, 0.3)
+  );
+  box-shadow:
+    0 0 20px rgba(255, 215, 0, 0.4),
+    inset 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.key-node.current .node-ring {
+  box-shadow:
+    0 0 30px rgba(255, 215, 0, 0.8),
+    inset 0 0 30px rgba(255, 215, 0, 0.4);
+}
+
+.node-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(138, 119, 255, 0.3);
+  transition: all 0.4s ease;
+}
+
+.key-node.collected .node-core {
+  background: radial-gradient(circle, #ffd700, #ff8c42);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+}
+
+.node-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(200, 184, 255, 0.6);
+  text-align: center;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  max-width: 80px;
+  line-height: 1.2;
+  transition: all 0.4s ease;
+}
+
+.key-node.collected .node-label {
+  color: rgba(255, 215, 0, 0.9);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* Buttons row */
+.buttons-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+/* Continue button */
+.congrats-continue-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 48px;
+  background: linear-gradient(135deg, #8a77ff 0%, #ff6b35 100%);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  border-radius: 50px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 0 30px rgba(138, 119, 255, 0.4),
+    0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.congrats-continue-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow:
+    0 0 50px rgba(255, 215, 0, 0.6),
+    0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Back to Lobby button */
+.congrats-lobby-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 40px;
+  background: rgba(10, 5, 21, 0.6);
+  border: 2px solid rgba(138, 119, 255, 0.4);
+  border-radius: 50px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 0 20px rgba(138, 119, 255, 0.2),
+    0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.congrats-lobby-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(138, 119, 255, 0.6);
+  background: rgba(10, 5, 21, 0.8);
+  box-shadow:
+    0 0 30px rgba(138, 119, 255, 0.4),
+    0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.btn-shimmer {
   position: absolute;
   inset: 0;
   background: linear-gradient(
@@ -332,141 +641,21 @@
     rgba(255, 255, 255, 0.3),
     transparent
   );
-  animation: keyShine 3s linear infinite;
+  transform: translateX(-100%);
+  animation: shimmerSlide 3s ease-in-out infinite;
 }
 
-@keyframes keyShine {
-  from {
+@keyframes shimmerSlide {
+  0% {
     transform: translateX(-100%);
   }
-  to {
+  50%, 100% {
     transform: translateX(200%);
   }
 }
 
-.key-label {
-  font-size: 28px;
-  font-weight: 900;
-  color: #ffd700;
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.8),
-    0 0 40px rgba(255, 215, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.6);
-  margin-bottom: 12px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
-.key-description {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 600;
-  line-height: 1.6;
-}
-
-/* Keys Progress Display */
-.congrats-progress {
-  margin: 30px 0;
-}
-
-.progress-label {
-  font-size: 20px;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 20px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-}
-
-.keys-display {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.key-slot {
-  width: 70px;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 40px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 3px solid rgba(138, 119, 255, 0.3);
-  border-radius: 15px;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  filter: grayscale(100%);
-}
-
-.key-slot.collected {
-  background: linear-gradient(
-    135deg,
-    rgba(138, 119, 255, 0.3) 0%,
-    rgba(255, 107, 53, 0.3) 100%
-  );
-  border-color: rgba(255, 215, 0, 0.6);
-  filter: grayscale(0%) drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
-  animation: keySlotPulse 2s ease-in-out infinite;
-}
-
-@keyframes keySlotPulse {
-  0%,
-  100% {
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
-  }
-}
-
-/* Continue button */
-.congrats-continue-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 16px;
-  padding: 22px 50px;
-  background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s ease;
-  animation: btnPulse 2s ease-in-out infinite;
-}
-
-@keyframes btnPulse {
-  0%,
-  100% {
-    box-shadow: 0 0 30px rgba(255, 107, 53, 0.5),
-      0 8px 25px rgba(0, 0, 0, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 50px rgba(255, 107, 53, 0.8),
-      0 12px 35px rgba(0, 0, 0, 0.5);
-  }
-}
-
-.congrats-continue-btn:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 0 60px rgba(255, 107, 53, 0.9),
-    0 15px 40px rgba(0, 0, 0, 0.6);
-}
-
-.btn-glow {
-  position: absolute;
-  inset: -4px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent);
-  border-radius: 50px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  filter: blur(8px);
-}
-
-.congrats-continue-btn:hover .btn-glow {
-  opacity: 1;
-}
-
 .btn-text {
-  font-size: 22px;
+  font-size: clamp(18px, 2.5vw, 22px);
   font-weight: 900;
   color: #ffffff;
   letter-spacing: 2px;
@@ -476,26 +665,14 @@
   z-index: 1;
 }
 
-.btn-arrow {
-  font-size: 24px;
-  color: #ffffff;
-  transition: all 0.3s ease;
-  position: relative;
-  z-index: 1;
-}
-
-.congrats-continue-btn:hover .btn-arrow {
-  transform: translateX(8px);
-}
-
 /* Vignette */
 .congrats-vignette {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: radial-gradient(
     ellipse at center,
     transparent 40%,
-    rgba(0, 0, 0, 0.6) 100%
+    rgba(0, 0, 0, 0.5) 100%
   );
   pointer-events: none;
   z-index: 1;
@@ -503,61 +680,200 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .congrats-content {
-    padding: 40px 24px;
+  .congrats-screen {
+    padding: 20px 12px;
   }
 
-  .congrats-trophy {
-    font-size: 80px;
+  .congrats-content {
+    padding: 32px 20px;
+  }
+
+  .completion-header {
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .header-ornament {
+    width: 50px;
+  }
+
+  .chapter-badge {
+    width: 64px;
+    height: 64px;
+  }
+
+  .badge-number {
+    font-size: 28px;
   }
 
   .congrats-title {
-    font-size: 48px;
-    letter-spacing: 2px;
+    margin-bottom: 20px;
   }
 
-  .congrats-text {
-    font-size: 20px;
+  .congrats-message {
+    margin-bottom: 36px;
   }
 
-  .congrats-chapter {
-    font-size: 36px;
+  .key-collection {
+    padding: 28px 20px;
+    margin: 36px auto;
   }
 
-  .congrats-subtext {
-    font-size: 16px;
+  .ornate-key {
+    width: 180px;
+    height: 72px;
   }
 
-  .congrats-continue-btn {
-    padding: 18px 40px;
+  .congrats-progress {
+    margin: 36px 0 32px;
   }
 
-  .btn-text {
-    font-size: 18px;
-    letter-spacing: 1px;
+  .progress-label {
+    margin-bottom: 24px;
   }
 
-  .btn-arrow {
-    font-size: 20px;
+  .keys-display {
+    gap: 8px;
+    margin-top: -50px;
+  }
+
+  .node-ring {
+    width: 44px;
+    height: 44px;
+  }
+
+  .node-core {
+    width: 18px;
+    height: 18px;
+  }
+
+  .node-label {
+    font-size: 9px;
+    max-width: 60px;
   }
 
   .back-lobby-btn {
     top: 14px;
     left: 14px;
-    padding: 10px 14px;
-    font-size: 14px;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .buttons-row {
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .congrats-continue-btn {
+    padding: 16px 40px;
+  }
+
+  .congrats-lobby-btn {
+    padding: 12px 32px;
   }
 }
 
-/* Accessibility - reduced motion */
+@media (max-width: 480px) {
+  .congrats-screen {
+    padding: 16px 8px;
+  }
+
+  .congrats-content {
+    padding: 24px 16px;
+  }
+
+  .completion-header {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .header-ornament {
+    width: 40px;
+  }
+
+  .chapter-badge {
+    width: 52px;
+    height: 52px;
+  }
+
+  .badge-number {
+    font-size: 24px;
+  }
+
+  .congrats-message {
+    margin-bottom: 28px;
+  }
+
+  .key-collection {
+    padding: 20px 16px;
+    margin: 28px auto;
+  }
+
+  .ornate-key {
+    width: 160px;
+    height: 64px;
+  }
+
+  .congrats-progress {
+    margin: 28px 0 24px;
+  }
+
+  .progress-label {
+    margin-bottom: 20px;
+  }
+
+  .keys-display {
+    gap: 6px;
+    margin-top: -45px;
+  }
+
+  .node-ring {
+    width: 36px;
+    height: 36px;
+  }
+
+  .node-core {
+    width: 14px;
+    height: 14px;
+  }
+
+  .node-label {
+    font-size: 8px;
+    max-width: 50px;
+  }
+
+  .back-lobby-btn {
+    top: 10px;
+    left: 10px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .buttons-row {
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .congrats-continue-btn {
+    padding: 14px 32px;
+  }
+
+  .congrats-lobby-btn {
+    padding: 10px 28px;
+  }
+}
+
+/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
-  .confetti-piece,
-  .firework,
-  .firework-spark,
-  .congrats-trophy,
+  .memory-orb,
+  .star,
+  .radial-waves,
+  .badge-ring,
+  .ornate-key,
+  .key-particle,
+  .btn-shimmer,
   .congrats-title,
-  .congrats-continue-btn,
-  .congrats-atmosphere {
+  .key-node.current {
     animation: none !important;
   }
 }

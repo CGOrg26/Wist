@@ -2084,3 +2084,138 @@
     display: none;
   }
 }
+
+@media (max-width: 640px), (max-height: 700px) {
+  .main-menu,
+  .dark-memory-menu,
+  .lobby-screen {
+    height: auto;
+    min-height: 100svh;
+    overflow-y: auto;
+  }
+
+  .menu-background {
+    padding: 24px 16px 40px;
+    justify-content: flex-start;
+  }
+
+  .game-title {
+    margin-top: 16px;
+    margin-bottom: 28px;
+  }
+
+  .menu-btn {
+    width: min(320px, 90vw);
+    height: 58px;
+  }
+
+  .auth-btn {
+    height: 56px;
+  }
+
+  .auth-actions {
+    gap: 14px;
+  }
+
+  .lobby-ui {
+    min-height: 100svh;
+    padding: 92px 16px 24px;
+    box-sizing: border-box;
+  }
+
+  .lobby-welcome {
+    position: static;
+    margin: 0 0 16px;
+  }
+
+  .lobby-center-panels {
+    position: relative;
+    inset: auto;
+    padding: 0;
+    align-items: flex-start;
+  }
+
+  .lobby-panel {
+    max-height: none;
+  }
+
+  .lobby-bottom-buttons {
+    position: static;
+    padding: 16px 0 8px;
+  }
+
+  .lobby-button-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .title-text {
+    font-size: clamp(48px, 16vw, 72px);
+    letter-spacing: 8px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  .auth-title {
+    font-size: 24px;
+  }
+
+  .auth-input {
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .btn-text {
+    font-size: 18px;
+    letter-spacing: 1.5px;
+  }
+
+  .memory-spotlight {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: 92vw;
+    height: 48vh;
+    margin: 20px auto 0;
+  }
+
+  .elegant-title {
+    position: static;
+    transform: none;
+    margin-top: 24px;
+  }
+
+  .chapter-pills {
+    flex-direction: column;
+    align-items: center;
+    margin: 16px auto 8px;
+  }
+
+  .pill {
+    min-width: min(260px, 90vw);
+    justify-content: center;
+  }
+
+  .sleek-nav {
+    margin: 6px auto 16px;
+  }
+
+  .nav-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nav-item {
+    justify-content: center;
+  }
+
+  .lobby-button-grid {
+    grid-template-columns: 1fr;
+  }
+}

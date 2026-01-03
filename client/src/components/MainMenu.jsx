@@ -126,20 +126,6 @@ export default function MainMenu({
             <div className="cloud cloud-3"></div>
           </div>
 
-          <div className="memory-particles">
-            {[...Array(15)].map((_, i) => (
-              <div
-                key={i}
-                className="particle"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 8}s`,
-                  animationDuration: `${6 + Math.random() * 6}s`,
-                }}
-              />
-            ))}
-          </div>
-
           <div className="game-title">
             <h1 className="title-text">WIST</h1>
             <p className="subtitle">A journey through fading memories</p>

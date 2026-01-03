@@ -6,6 +6,7 @@ import GameDialog from "./components/GameDialog.jsx";
 import GameStatusBar from "./components/GameStatusBar.jsx";
 import MainMenu from "./components/MainMenu.jsx";
 import CongratulationsPage from "./components/CongratulationsPage.jsx";
+import ChapterTransition from "./components/ChapterTransition.jsx";
 import DiaryEntry from "./components/DiaryEntry.jsx";
 
 function App() {
@@ -55,6 +56,7 @@ function App() {
   const [selectedChapter, setSelectedChapter] = useState(1);
   const [gameChapter, setGameChapter] = useState(1);
   const [showCongrats, setShowCongrats] = useState(false);
+  const [showChapterTransition, setShowChapterTransition] = useState(false);
   const [completedChapter, setCompletedChapter] = useState(null);
 
   // Track completed chapters and show diary on first login
@@ -79,6 +81,7 @@ function App() {
 
   const screenRef = useRef(screen);
   const lastChapterCompleteTokenRef = useRef(0);
+  const handledChaptersRef = useRef(new Set());
   const network = useMemo(() => new NetworkClient(), []);
 
   const refreshGames = async () => {
@@ -143,6 +146,10 @@ function App() {
   useEffect(() => {
     screenRef.current = screen;
   }, [screen]);
+
+  useEffect(() => {
+    handledChaptersRef.current = new Set();
+  }, [roomId]);
 
   useEffect(() => {
     // game created - host waits for second player
@@ -480,6 +487,11 @@ function App() {
 
   // Function to show congratulations screen when a chapter is completed
   const handleChapterComplete = (chapterNum) => {
+    if (handledChaptersRef.current.has(chapterNum)) {
+      return;
+    }
+    handledChaptersRef.current.add(chapterNum);
+
     setCompletedChapter(chapterNum);
     setShowCongrats(true);
 
@@ -515,9 +527,26 @@ function App() {
   // Function to continue after congratulations
   const handleContinueFromCongrats = () => {
     setShowCongrats(false);
+    if (completedChapter === 1) {
+      setShowChapterTransition(true);
+      return;
+    }
     setCompletedChapter(null);
     setScreen("lobby");
     setLobbyMode("home");
+  };
+
+  const handleChapterTransitionComplete = () => {
+    setShowChapterTransition(false);
+    setCompletedChapter(null);
+    setSelectedChapter(2);
+    setGameChapter(2);
+    network.sendPuzzleUpdate({
+      chapter: 2,
+      levelReached: 1,
+      respawnToken: Date.now(),
+      respawnLevel: 1,
+    });
   };
 
   // Function to handle diary completion
@@ -817,6 +846,13 @@ function App() {
         <CongratulationsPage
           chapterNumber={completedChapter}
           onContinue={handleContinueFromCongrats}
+        />
+      )}
+
+      {showChapterTransition && (
+        <ChapterTransition
+          nextChapterNumber={2}
+          onComplete={handleChapterTransitionComplete}
         />
       )}
 
