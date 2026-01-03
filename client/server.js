@@ -20,7 +20,7 @@ if (!fs.existsSync(distPath)) {
 app.use(express.static(distPath));
 
 // SPA fallback - serve index.html for all non-static routes
-app.get("*", (req, res) => {
+app.use((req, res) => {
   const indexPath = join(distPath, "index.html");
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
