@@ -190,7 +190,60 @@
 }
 
 .page-dot.completed {
-  background: rgba(138, 119, 255, 0.5);
+  background: linear-gradient(135deg, #7dff7d 0%, #5ecc5e 100%);
+  box-shadow: 0 0 12px rgba(125, 255, 125, 0.5);
+  position: relative;
+}
+
+.page-dot.completed::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Story Mode Styles (non-diary) */
+.diary-page.story-mode {
+  background: linear-gradient(135deg, #1a0f2e 0%, #0f0820 100%);
+  border: 2px solid rgba(138, 119, 255, 0.3);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    0 0 100px rgba(138, 119, 255, 0.3),
+    inset 0 0 80px rgba(138, 119, 255, 0.05);
+}
+
+.diary-page.story-mode::before {
+  display: none;
+}
+
+.story-title {
+  font-family: "Georgia", "Times New Roman", serif;
+  font-size: 38px;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  letter-spacing: 2px;
+  text-shadow:
+    0 0 20px rgba(138, 119, 255, 0.6),
+    0 4px 12px rgba(0, 0, 0, 0.8);
+  font-style: italic;
+  margin-bottom: 40px;
+}
+
+.story-text {
+  font-family: "Georgia", "Palatino", serif;
+  font-size: 18px;
+  line-height: 1.8;
+  color: #e0d6ff;
+  text-align: left;
+  font-weight: 400;
+  letter-spacing: 0.3px;
 }
 
 /* Responsive */
@@ -222,5 +275,15 @@
 
   .page-indicator {
     order: -1;
+  }
+
+  .story-title {
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+
+  .story-text {
+    font-size: 16px;
+    line-height: 1.7;
   }
 }

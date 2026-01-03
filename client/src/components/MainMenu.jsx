@@ -50,6 +50,7 @@ export default function MainMenu({
   const [memoryPhase, setMemoryPhase] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showMainMenu, setShowMainMenu] = useState(!!user);
+  const isChapter2Locked = !completedChapters?.has?.(1);
 
   // Handle smooth transition when user logs in
   useEffect(() => {
@@ -89,9 +90,9 @@ export default function MainMenu({
     if (onContinueGame) list.push({ key: "continue", label: "Continue Game", onClick: onContinueGame });
     if (onLobbyNewGame) list.push({ key: "new", label: "New Game", onClick: onLobbyNewGame });
     if (onLobbyJoinGame) list.push({ key: "join", label: "Join Game", onClick: onLobbyJoinGame });
-    if (onLobbyBack) list.push({ key: "back", label: "Back", onClick: onLobbyBack });
+    if (onLogout) list.push({ key: "logout", label: "Logout", onClick: onLogout });
     return list;
-  }, [user, onContinueGame, onLobbyNewGame, onLobbyJoinGame, onLobbyBack]);
+  }, [user, onContinueGame, onLobbyNewGame, onLobbyJoinGame, onLogout]);
 
   useEffect(() => {
     if (!user || menuItems.length === 0) return;
@@ -289,11 +290,14 @@ export default function MainMenu({
           <span className="pill-name">Denial</span>
         </button>
         <button
-          className={`pill elevated ${chapter === 2 ? "active" : ""}`}
+          className={`pill elevated ${isChapter2Locked ? "locked" : ""} ${chapter === 2 ? "active" : ""}`}
           onClick={() => onChapterChange(2)}
+          disabled={isChapter2Locked}
+          aria-disabled={isChapter2Locked}
         >
           <span className="pill-num">02</span>
           <span className="pill-name">Anger</span>
+          {isChapter2Locked && <span className="pill-lock">Locked</span>}
         </button>
       </div>
 
@@ -426,6 +430,14 @@ export default function MainMenu({
                   ))}
                 </div>
               )}
+
+              <button
+                className="lobby-back-to-home elevated"
+                type="button"
+                onClick={() => onLobbyBack && onLobbyBack()}
+              >
+                Back to Lobby
+              </button>
             </div>
           )}
 
@@ -449,6 +461,14 @@ export default function MainMenu({
                 onClick={() => onJoinSubmit && onJoinSubmit()}
               >
                 <span className="btn-text">Join</span>
+              </button>
+
+              <button
+                className="lobby-back-to-home elevated"
+                type="button"
+                onClick={() => onLobbyBack && onLobbyBack()}
+              >
+                Back to Lobby
               </button>
             </div>
           )}

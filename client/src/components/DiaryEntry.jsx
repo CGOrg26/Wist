@@ -17,7 +17,8 @@ Joy`,
   },
   {
     title: "What happened next...",
-    content: `When Joy hid the keys, something unexpected happened. The house... changed. Mother and daughter found themselves pulled into an unknown realm - a place born from grief and memory.
+    isStoryMode: true,
+    content: `When Joy hid the keys, something unexpected happened. The house changed. Mother and daughter found themselves pulled into an unknown realm - a place born from grief and memory.
 
 To escape and find peace, they must journey through 5 chapters, each representing a stage of grief:
 
@@ -81,12 +82,12 @@ export default function DiaryEntry({ onComplete }) {
   return (
     <div className="diary-overlay">
       <div className="diary-container">
-        <div className="diary-page">
+        <div className={`diary-page ${PAGES[currentPage].isStoryMode ? 'story-mode' : ''}`}>
           <div className="diary-content">
             {PAGES[currentPage].title ? (
-              <h2 className="diary-title">{PAGES[currentPage].title}</h2>
+              <h2 className={`diary-title ${PAGES[currentPage].isStoryMode ? 'story-title' : ''}`}>{PAGES[currentPage].title}</h2>
             ) : null}
-            <div className="diary-text">
+            <div className={`diary-text ${PAGES[currentPage].isStoryMode ? 'story-text' : ''}`}>
               {visibleCount === 0 ? <span className="diary-cursor" /> : null}
               {(() => {
                 let seenWords = 0;

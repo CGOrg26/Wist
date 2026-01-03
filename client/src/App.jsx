@@ -34,13 +34,8 @@ function App() {
   });
 
   // Determine API base URL based on environment
-  const getApiBase = () => {
-    const hostname = window.location.hostname;
-    if (hostname.includes("railway") || hostname.includes("production") || hostname !== "localhost") {
-      return "https://wist-back-production.up.railway.app";
-    }
-    return "http://localhost:3000";
-  };
+  const getApiBase = () =>
+    import.meta.env.VITE_API_BASE?.trim() || "http://localhost:3000";
   const API_BASE = getApiBase();
   
   const [user, setUser] = useState(null);
@@ -61,6 +56,7 @@ function App() {
   const [completedChapters, setCompletedChapters] = useState(new Set());
   const [showDiary, setShowDiary] = useState(false);
   const [hasSeenDiary, setHasSeenDiary] = useState(false);
+  const isChapter2Unlocked = completedChapters.has(1);
 
   // Lobby sub-modes:
   // home => 4 bottom buttons only
@@ -77,6 +73,7 @@ function App() {
   });
 
   const screenRef = useRef(screen);
+  const lastChapterCompleteTokenRef = useRef(0);
   const network = useMemo(() => new NetworkClient(), []);
 
   const refreshGames = async () => {
@@ -121,7 +118,7 @@ function App() {
     // Show diary on first login if user hasn't seen it
     const diaryKey = `hasSeenDiary_${data.id}`;
     const seenDiary = localStorage.getItem(diaryKey);
-    if (!seenDiary) {
+    if (authMode === "register" || !seenDiary) {
       setShowDiary(true);
     }
   };
@@ -493,6 +490,23 @@ function App() {
     });
   };
 
+  useEffect(() => {
+    const token = puzzleState?.chapterCompleteToken;
+    const chapter = puzzleState?.chapterCompleted;
+    if (
+      typeof token === "number" &&
+      token !== lastChapterCompleteTokenRef.current &&
+      typeof chapter === "number"
+    ) {
+      if (showCongrats && completedChapter === chapter) {
+        lastChapterCompleteTokenRef.current = token;
+        return;
+      }
+      lastChapterCompleteTokenRef.current = token;
+      handleChapterComplete(chapter);
+    }
+  }, [puzzleState, showCongrats, completedChapter]);
+
   // Function to continue after congratulations
   const handleContinueFromCongrats = () => {
     setShowCongrats(false);
@@ -524,6 +538,12 @@ function App() {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (!isChapter2Unlocked && selectedChapter === 2) {
+      setSelectedChapter(1);
+    }
+  }, [isChapter2Unlocked, selectedChapter]);
+
   // Expose handleChapterComplete globally for game levels to call
   useEffect(() => {
     window.showChapterComplete = handleChapterComplete;
@@ -549,7 +569,19 @@ function App() {
           }
           onLogout={handleLogout}
           chapter={selectedChapter}
-          onChapterChange={setSelectedChapter}
+          onChapterChange={(nextChapter) => {
+            if (nextChapter === 2 && !isChapter2Unlocked) {
+              setDialog({
+                open: true,
+                title: "Chapter Locked",
+                message: "Complete Chapter 1 to unlock Chapter 2.",
+              });
+              setSelectedChapter(1);
+              return;
+            }
+            setSelectedChapter(nextChapter);
+          }}
+          completedChapters={completedChapters}
           // Lobby-related props
           lobbyMode={lobbyMode}
           onContinueGame={handleContinueGame}
@@ -585,7 +617,19 @@ function App() {
           }
           onLogout={handleLogout}
           chapter={selectedChapter}
-          onChapterChange={setSelectedChapter}
+          onChapterChange={(nextChapter) => {
+            if (nextChapter === 2 && !isChapter2Unlocked) {
+              setDialog({
+                open: true,
+                title: "Chapter Locked",
+                message: "Complete Chapter 1 to unlock Chapter 2.",
+              });
+              setSelectedChapter(1);
+              return;
+            }
+            setSelectedChapter(nextChapter);
+          }}
+          completedChapters={completedChapters}
           waitingScreen={true}
           roomId={roomId}
           inviteTarget={inviteTarget}
