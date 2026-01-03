@@ -31,7 +31,18 @@ const io = new Server(httpServer, {
   cors: {
     origin: clientUrl,
     methods: ["GET", "POST"],
+    credentials: true,
   },
+  transports: ["websocket", "polling"],
+});
+
+// Health check endpoint
+app.get("/", (req, res) => {
+  res.json({ status: "ok", message: "Wist server is running" });
+});
+
+app.get("/health", (req, res) => {
+  res.json({ status: "healthy" });
 });
 
 // ─────────────────────────────

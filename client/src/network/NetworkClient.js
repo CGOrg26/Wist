@@ -3,7 +3,13 @@ import { io } from "socket.io-client";
 export class NetworkClient {
   constructor() {
     const serverUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
-    this.socket = io(serverUrl);
+    this.socket = io(serverUrl, {
+      transports: ["websocket", "polling"],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5,
+    });
 
     // Basic connection / identity
     this.roomId = null;
