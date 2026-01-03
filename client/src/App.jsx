@@ -34,8 +34,13 @@ function App() {
   });
 
   // Determine API base URL based on environment
-  const getApiBase = () =>
-    import.meta.env.VITE_API_BASE?.trim() || "http://localhost:3000";
+  const getApiBase = () => {
+    const hostname = window.location.hostname;
+    if (hostname.includes("railway") || hostname.includes("production") || hostname !== "localhost") {
+      return "https://wist-back-production.up.railway.app";
+    }
+    return "http://localhost:3000";
+  };
   const API_BASE = getApiBase();
   
   const [user, setUser] = useState(null);
