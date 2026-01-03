@@ -2060,6 +2060,65 @@
   }
 }
 
+@media (max-height: 860px) {
+  .menu-background {
+    justify-content: flex-start;
+    padding-top: 28px;
+    padding-bottom: 24px;
+  }
+
+  .game-title {
+    margin-bottom: 32px;
+  }
+
+  .auth-panel {
+    padding: 26px 26px;
+  }
+
+  .auth-title {
+    margin-bottom: 22px;
+  }
+
+  .auth-subtitle {
+    margin-bottom: 20px;
+  }
+
+  .auth-fields {
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .auth-input {
+    height: 50px;
+  }
+
+  .auth-btn {
+    height: 56px;
+  }
+
+  .auth-actions {
+    gap: 14px;
+  }
+}
+
+@media (max-height: 740px) {
+  .game-title {
+    margin-bottom: 20px;
+  }
+
+  .auth-panel {
+    padding: 22px 22px;
+  }
+
+  .auth-title {
+    font-size: 24px;
+  }
+
+  .auth-subtitle {
+    font-size: 13px;
+  }
+}
+
 @media (max-width: 560px) {
   .memory-spotlight {
     top: 52%;
@@ -2089,9 +2148,9 @@
   .main-menu,
   .dark-memory-menu,
   .lobby-screen {
-    height: auto;
+    height: 100svh;
     min-height: 100svh;
-    overflow-y: auto;
+    overflow: hidden;
   }
 
   .menu-background {

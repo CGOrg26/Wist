@@ -549,3 +549,77 @@
   color: #ffe9a8;
   font-weight: 700;
 }
+
+@media (max-height: 860px) {
+  .lobby-box,
+  .waiting-box {
+    padding: 2.2rem;
+    min-width: 480px;
+  }
+
+  .lobby-title {
+    font-size: 42px;
+    margin-bottom: 2rem;
+  }
+
+  .lobby-button {
+    padding: 1.1rem;
+    font-size: 22px;
+  }
+
+  .lobby-divider {
+    font-size: 22px;
+    margin: 1.2rem 0;
+  }
+
+  .lobby-input {
+    padding: 1.1rem;
+    font-size: 20px;
+  }
+
+  .waiting-title {
+    font-size: 34px;
+    margin-bottom: 1.6rem;
+  }
+
+  .room-code-text {
+    font-size: 48px;
+  }
+}
+
+@media (max-height: 740px) {
+  .lobby-box,
+  .waiting-box {
+    padding: 1.8rem;
+    min-width: 420px;
+  }
+
+  .lobby-title {
+    font-size: 36px;
+    margin-bottom: 1.6rem;
+  }
+
+  .lobby-button {
+    padding: 1rem;
+    font-size: 20px;
+  }
+
+  .lobby-input {
+    padding: 1rem;
+    font-size: 18px;
+  }
+
+  .waiting-title {
+    font-size: 28px;
+    margin-bottom: 1.4rem;
+  }
+
+  .room-code-display {
+    padding: 1.6rem;
+    margin-bottom: 1.6rem;
+  }
+
+  .room-code-text {
+    font-size: 42px;
+  }
+}

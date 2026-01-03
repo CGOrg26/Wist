@@ -10,6 +10,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   z-index: 999999;
   animation: diaryFadeIn 0.8s ease;
 }
@@ -26,6 +27,7 @@
 .diary-container {
   max-width: 800px;
   width: 90vw;
+  max-height: 90vh;
   perspective: 1500px;
 }
 
@@ -39,6 +41,7 @@
   position: relative;
   animation: pageFlip 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   min-height: 500px;
+  max-height: 82vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -285,5 +288,62 @@
   .story-text {
     font-size: 16px;
     line-height: 1.7;
+  }
+}
+
+@media (max-height: 860px) {
+  .diary-page {
+    padding: 40px 36px;
+    min-height: auto;
+    max-height: 80vh;
+  }
+
+  .diary-title {
+    font-size: 30px;
+    margin-bottom: 22px;
+  }
+
+  .diary-text {
+    font-size: 18px;
+  }
+
+  .diary-navigation {
+    margin-top: 24px;
+  }
+
+  .story-title {
+    font-size: 30px;
+    margin-bottom: 28px;
+  }
+}
+
+@media (max-height: 740px) {
+  .diary-page {
+    padding: 32px 28px;
+    max-height: 76vh;
+  }
+
+  .diary-title {
+    font-size: 26px;
+  }
+
+  .diary-text {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .diary-date {
+    font-size: 16px;
+    margin-top: 14px;
+  }
+
+  .story-title {
+    font-size: 26px;
+    margin-bottom: 22px;
+  }
+
+  .story-text {
+    font-size: 15px;
+    line-height: 1.5;
   }
 }
