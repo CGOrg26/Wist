@@ -4,12 +4,16 @@ export class NetworkClient {
   constructor() {
     // Determine server URL based on environment
     let serverUrl;
-    if (typeof window !== "undefined" && window.location.hostname.includes("railway")) {
-      // Production: use the backend domain
+    const hostname = typeof window !== "undefined" ? window.location.hostname : "";
+    
+    if (hostname.includes("production") || hostname.includes("railway")) {
+      // Production: hardcoded backend URL
       serverUrl = "https://wist-back-production.up.railway.app";
+      console.log("🚀 Production mode - connecting to:", serverUrl);
     } else {
       // Development: use localhost
-      serverUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+      serverUrl = "http://localhost:3000";
+      console.log("🔧 Development mode - connecting to:", serverUrl);
     }
     
     this.socket = io(serverUrl, {
