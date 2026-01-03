@@ -2,7 +2,16 @@ import { io } from "socket.io-client";
 
 export class NetworkClient {
   constructor() {
-    const serverUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    // Determine server URL based on environment
+    let serverUrl;
+    if (typeof window !== "undefined" && window.location.hostname.includes("railway")) {
+      // Production: use the backend domain
+      serverUrl = "https://wist-back-production.up.railway.app";
+    } else {
+      // Development: use localhost
+      serverUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    }
+    
     this.socket = io(serverUrl, {
       transports: ["websocket", "polling"],
       reconnection: true,
