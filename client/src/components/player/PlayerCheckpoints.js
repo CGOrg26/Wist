@@ -50,6 +50,11 @@ export function handleCheckpointsAndRespawn(player, newPos) {
   if (currentZ < CHAPTER_COMPLETE_Z && !player._chapterComplete) {
     player._chapterComplete = true;
 
+    network.sendPuzzleUpdate({
+      chapterCompleted: chapterNumber,
+      chapterCompleteToken: Date.now(),
+    });
+
     console.log('🎉 Chapter Complete! Z position:', currentZ, 'Chapter:', chapterNumber);
 
     // Trigger the congratulations screen

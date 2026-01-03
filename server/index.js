@@ -80,6 +80,8 @@ function buildDefaultPuzzleState(hostLevel = 1, clientLevel = 1, chapter = 1) {
     clientLevel,
     respawnToken: 0,
     respawnLevel: null,
+    chapterCompleted: null,
+    chapterCompleteToken: 0,
   };
 }
 
@@ -524,6 +526,12 @@ io.on("connection", (socket) => {
     }
     if (typeof puzzleState.respawnLevel === "number") {
       room.puzzleState.respawnLevel = puzzleState.respawnLevel;
+    }
+    if (typeof puzzleState.chapterCompleted === "number") {
+      room.puzzleState.chapterCompleted = puzzleState.chapterCompleted;
+    }
+    if (typeof puzzleState.chapterCompleteToken === "number") {
+      room.puzzleState.chapterCompleteToken = puzzleState.chapterCompleteToken;
     }
 
     io.to(roomId).emit("puzzleStateChanged", room.puzzleState);
