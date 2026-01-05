@@ -98,7 +98,7 @@
   border: 10px solid transparent;
   border-image: linear-gradient(135deg, #FF6B35 0%, #FFD700 25%, #4682B4 50%, #9B59B6 75%, #FF6B35 100%) 1;
   border-radius: 24px;
-  padding: 3rem;
+  padding: clamp(2rem, 4vw, 3rem);
   box-shadow:
     inset 0 0 20px rgba(255, 255, 255, 0.6),
     inset 0 4px 0 rgba(255, 255, 255, 0.8),
@@ -107,7 +107,8 @@
     0 12px 0 #2F4F7F,
     0 16px 40px rgba(0, 0, 0, 0.5),
     0 0 60px rgba(70, 130, 180, 0.3);
-  min-width: 550px;
+  width: min(550px, 90vw);
+  max-width: 550px;
   position: relative;
   z-index: 10;
 }
@@ -116,7 +117,7 @@
 
 /* Title */
 .lobby-title {
-  font-size: 52px;
+  font-size: clamp(32px, 6vw, 52px);
   font-weight: 900;
   background: linear-gradient(135deg, #FF6B35 0%, #FFD700 50%, #FF6B35 100%);
   -webkit-background-clip: text;
@@ -125,7 +126,7 @@
   text-align: center;
   margin-bottom: 2.5rem;
   text-shadow: none;
-  letter-spacing: 3px;
+  letter-spacing: clamp(2px, 0.5vw, 3px);
   text-transform: uppercase;
   filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.2))
           drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
@@ -135,11 +136,11 @@
 /* Buttons */
 .lobby-button {
   width: 100%;
-  padding: 1.3rem;
-  font-size: 26px;
+  padding: clamp(1rem, 2vh, 1.3rem);
+  font-size: clamp(18px, 3vw, 26px);
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 3px;
+  letter-spacing: clamp(2px, 0.4vw, 3px);
   border: 6px solid;
   border-radius: 16px;
   cursor: pointer;
@@ -211,21 +212,21 @@
 .lobby-divider {
   text-align: center;
   color: #4682B4;
-  font-size: 28px;
+  font-size: clamp(20px, 3.5vw, 28px);
   font-weight: 900;
   margin: 1.5rem 0;
   text-shadow:
     2px 2px 0 rgba(255, 255, 255, 0.9),
     0 0 10px rgba(70, 130, 180, 0.5);
   position: relative;
-  letter-spacing: 4px;
+  letter-spacing: clamp(2px, 0.5vw, 4px);
 }
 
 /* Input field */
 .lobby-input {
   width: 100%;
-  padding: 1.3rem;
-  font-size: 24px;
+  padding: clamp(1rem, 2vh, 1.3rem);
+  font-size: clamp(18px, 3vw, 24px);
   font-weight: 900;
   text-align: center;
   border: 6px solid #4682B4;
@@ -246,7 +247,7 @@
     0 6px 0 #2F4F7F,
     0 10px 20px rgba(0, 0, 0, 0.2);
   color: #2F4F7F;
-  letter-spacing: 6px;
+  letter-spacing: clamp(3px, 0.8vw, 6px);
   text-transform: uppercase;
   transition: all 0.3s ease;
 }
@@ -375,7 +376,7 @@
   border: 10px solid transparent;
   border-image: linear-gradient(135deg, #FF6B35 0%, #FFD700 25%, #4682B4 50%, #9B59B6 75%, #FF6B35 100%) 1;
   border-radius: 24px;
-  padding: 3rem;
+  padding: clamp(2rem, 4vw, 3rem);
   box-shadow:
     inset 0 0 20px rgba(255, 255, 255, 0.6),
     inset 0 4px 0 rgba(255, 255, 255, 0.8),
@@ -385,7 +386,8 @@
     0 16px 40px rgba(0, 0, 0, 0.5),
     0 0 60px rgba(70, 130, 180, 0.3);
   text-align: center;
-  min-width: 550px;
+  width: min(550px, 90vw);
+  max-width: 550px;
   position: relative;
   z-index: 10;
 }

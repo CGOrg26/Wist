@@ -287,11 +287,11 @@
 
 /* Title */
 .congrats-title {
-  font-size: clamp(40px, 6vw, 64px);
+  font-size: clamp(28px, 5vw, 64px);
   font-weight: 900;
   color: #ffffff;
   margin: 0 0 24px;
-  letter-spacing: 4px;
+  letter-spacing: clamp(2px, 0.5vw, 4px);
   text-transform: uppercase;
   text-shadow:
     0 0 30px rgba(138, 119, 255, 0.6),
@@ -321,10 +321,10 @@
 }
 
 .congrats-chapter-name {
-  font-size: clamp(36px, 5vw, 56px);
+  font-size: clamp(24px, 4vw, 56px);
   font-weight: 900;
   margin: 0 0 8px;
-  letter-spacing: 3px;
+  letter-spacing: clamp(1px, 0.3vw, 3px);
   background: linear-gradient(135deg, #ffd700 0%, #ff8c42 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -344,9 +344,9 @@
 /* Ornate SVG Key */
 .key-collection {
   position: relative;
-  margin: 48px auto;
-  padding: 40px;
-  max-width: 500px;
+  margin: clamp(24px, 5vh, 48px) auto;
+  padding: clamp(20px, 4vw, 40px);
+  max-width: min(500px, 90vw);
   background: linear-gradient(
     135deg,
     rgba(10, 5, 21, 0.6) 0%,
@@ -371,6 +371,8 @@
 .ornate-key {
   display: block;
   margin: 0 auto 24px;
+  width: clamp(140px, 30vw, 220px);
+  height: auto;
   filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.6))
           drop-shadow(0 0 50px rgba(255, 140, 66, 0.4));
   animation: keyLevitate 3s ease-in-out infinite;

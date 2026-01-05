@@ -36,7 +36,7 @@
   z-index: 1;
   text-align: center;
   color: #ffffff;
-  padding: 32px;
+  padding: clamp(20px, 4vw, 32px);
   border-radius: 24px;
   background: rgba(0, 0, 0, 0.45);
   border: 2px solid rgba(138, 119, 255, 0.4);
@@ -44,6 +44,7 @@
     0 12px 40px rgba(0, 0, 0, 0.6),
     0 0 40px rgba(138, 119, 255, 0.2);
   max-height: 84vh;
+  max-width: min(600px, 92vw);
   opacity: 0;
   transform: translateY(16px) scale(0.98);
   transition: opacity 0.6s ease, transform 0.6s ease, border-color 0.5s ease;
@@ -63,38 +64,38 @@
 }
 
 .transition-label {
-  font-size: 12px;
-  letter-spacing: 3px;
+  font-size: clamp(10px, 1.5vw, 12px);
+  letter-spacing: clamp(2px, 0.4vw, 3px);
   text-transform: uppercase;
   color: rgba(200, 184, 255, 0.9);
   margin-bottom: 12px;
 }
 
 .transition-title {
-  font-size: clamp(28px, 5vw, 48px);
+  font-size: clamp(24px, 4.5vw, 48px);
   font-weight: 900;
   margin: 0 0 12px;
-  letter-spacing: 2px;
+  letter-spacing: clamp(1px, 0.3vw, 2px);
   text-shadow:
     0 0 24px rgba(138, 119, 255, 0.7),
     0 4px 12px rgba(0, 0, 0, 0.7);
 }
 
 .transition-subtitle {
-  font-size: clamp(14px, 2.4vw, 18px);
+  font-size: clamp(13px, 2vw, 18px);
   color: rgba(255, 255, 255, 0.8);
-  margin: 0 0 24px;
+  margin: 0 0 clamp(18px, 3vh, 24px);
 }
 
 .transition-btn {
-  height: 52px;
-  padding: 0 28px;
+  height: clamp(48px, 7vh, 52px);
+  padding: 0 clamp(20px, 4vw, 28px);
   border-radius: 14px;
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: clamp(14px, 2vw, 16px);
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: clamp(0.5px, 0.15vw, 1px);
   text-transform: uppercase;
   background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
   color: #ffffff;
@@ -131,9 +132,9 @@
 
 .key-container {
   position: relative;
-  width: 120px;
-  height: 120px;
-  margin: 0 auto 24px;
+  width: clamp(80px, 15vw, 120px);
+  height: clamp(80px, 15vw, 120px);
+  margin: 0 auto clamp(18px, 3vh, 24px);
   opacity: 0;
   transform: translateY(-20px) scale(0.8);
   transition: opacity 0.6s ease, transform 0.6s ease;

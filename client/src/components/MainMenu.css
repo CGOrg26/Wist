@@ -182,8 +182,8 @@
 }
 
 .menu-btn {
-  width: 280px;
-  height: 65px;
+  width: min(280px, 85vw);
+  height: clamp(55px, 8vh, 65px);
   background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
   border: none;
   border-radius: 14px;
@@ -221,13 +221,13 @@
 }
 
 .btn-text {
-  font-size: 22px;
+  font-size: clamp(16px, 2.5vw, 22px);
   font-weight: 900;
   color: #ffffff;
   text-shadow:
     2px 2px 4px rgba(0, 0, 0, 0.6),
     0 0 15px rgba(255, 255, 255, 0.4);
-  letter-spacing: 2.5px;
+  letter-spacing: clamp(1.5px, 0.3vw, 2.5px);
   text-transform: uppercase;
   position: relative;
   z-index: 1;
