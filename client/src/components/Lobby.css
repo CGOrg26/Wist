@@ -625,3 +625,378 @@
     font-size: 42px;
   }
 }
+
+/* Extra responsive styles for mobile and tablets */
+@media (max-width: 768px) {
+  .lobby-container,
+  .waiting-container {
+    padding: 16px;
+    min-height: 100svh;
+    height: auto;
+    flex-wrap: wrap;
+  }
+
+  .lobby-box,
+  .waiting-box {
+    width: min(95vw, 500px);
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border-width: 8px;
+  }
+
+  .lobby-title,
+  .waiting-title {
+    font-size: clamp(28px, 7vw, 42px);
+    margin-bottom: clamp(1.2rem, 3vh, 2rem);
+  }
+
+  .lobby-button,
+  .join-button,
+  .create-button,
+  .back-button {
+    padding: clamp(0.9rem, 2vh, 1.1rem);
+    font-size: clamp(16px, 4vw, 22px);
+    margin-bottom: 0.8rem;
+  }
+
+  .lobby-divider {
+    font-size: clamp(18px, 4vw, 24px);
+    margin: 1rem 0;
+  }
+
+  .lobby-input {
+    padding: clamp(0.9rem, 2vh, 1.1rem);
+    font-size: clamp(16px, 4vw, 20px);
+    border-width: 4px;
+  }
+
+  .lobby-button-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .waiting-icon {
+    font-size: 48px;
+    margin-bottom: 0.8rem;
+  }
+
+  .room-code-display {
+    padding: clamp(1.4rem, 3vh, 1.8rem);
+    margin-bottom: clamp(1.4rem, 3vh, 1.8rem);
+    border-width: 4px;
+  }
+
+  .room-code-label {
+    font-size: 16px;
+  }
+
+  .room-code-text {
+    font-size: clamp(40px, 10vw, 50px);
+    letter-spacing: 6px;
+  }
+
+  .waiting-message {
+    font-size: 16px;
+  }
+
+  .lobby-profile {
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+
+  .lobby-profile-title {
+    font-size: 14px;
+  }
+
+  .lobby-profile-row {
+    font-size: 13px;
+  }
+
+  .lobby-section-title {
+    font-size: 13px;
+  }
+
+  .lobby-chip {
+    font-size: 12px;
+    padding: 5px 9px;
+  }
+
+  .lobby-small-button {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .lobby-container,
+  .waiting-container {
+    min-height: 100svh;
+    height: auto;
+  }
+
+  .lobby-box,
+  .waiting-box {
+    width: min(92vw, 420px);
+    padding: clamp(1.2rem, 3vw, 2rem);
+    border-width: 6px;
+    max-width: 100%;
+  }
+
+  .lobby-title {
+    font-size: clamp(24px, 6vw, 36px);
+    margin-bottom: 1.4rem;
+  }
+
+  .waiting-title {
+    font-size: clamp(26px, 6vw, 38px);
+  }
+
+  .lobby-button,
+  .join-button,
+  .create-button,
+  .back-button {
+    padding: clamp(0.8rem, 2.5vh, 1rem);
+    font-size: clamp(14px, 3.5vw, 19px);
+    margin-bottom: 0.7rem;
+    border-width: 4px;
+  }
+
+  .lobby-divider {
+    font-size: clamp(16px, 3vw, 20px);
+    margin: 0.8rem 0;
+  }
+
+  .lobby-input {
+    padding: clamp(0.8rem, 2.5vh, 1rem);
+    font-size: clamp(14px, 3.5vw, 18px);
+    border-width: 4px;
+    margin-bottom: 0.8rem;
+  }
+
+  .lobby-button-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .waiting-box {
+    margin: 0 auto;
+  }
+
+  .room-code-display {
+    padding: 1.2rem;
+    margin-bottom: 1.4rem;
+    border-width: 4px;
+  }
+
+  .room-code-label {
+    font-size: 14px;
+  }
+
+  .room-code-text {
+    font-size: clamp(32px, 10vw, 44px);
+    letter-spacing: 5px;
+  }
+
+  .waiting-icon {
+    font-size: 44px;
+  }
+
+  .waiting-message {
+    font-size: 15px;
+  }
+
+  .lobby-clouds {
+    display: none;
+  }
+
+  .lobby-profile {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .lobby-section {
+    margin: 10px 0 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lobby-container,
+  .waiting-container {
+    padding: 12px;
+  }
+
+  .lobby-box,
+  .waiting-box {
+    width: min(90vw, 360px);
+    padding: clamp(1rem, 3vw, 1.6rem);
+    border-width: 5px;
+  }
+
+  .lobby-title {
+    font-size: clamp(20px, 5vw, 28px);
+    margin-bottom: 1.2rem;
+    letter-spacing: 1px;
+  }
+
+  .waiting-title {
+    font-size: clamp(22px, 5.5vw, 32px);
+  }
+
+  .lobby-button,
+  .join-button,
+  .create-button,
+  .back-button {
+    padding: clamp(0.7rem, 2vh, 0.9rem);
+    font-size: clamp(12px, 3vw, 16px);
+    margin-bottom: 0.6rem;
+    border-width: 3px;
+    height: auto;
+    min-height: 48px;
+  }
+
+  .lobby-divider {
+    font-size: clamp(14px, 2.8vw, 18px);
+    margin: 0.6rem 0;
+  }
+
+  .lobby-input {
+    padding: clamp(0.7rem, 2vh, 0.9rem);
+    font-size: clamp(12px, 3vw, 16px);
+    border-width: 3px;
+    margin-bottom: 0.6rem;
+    height: auto;
+    min-height: 44px;
+  }
+
+  .lobby-button-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .room-code-display {
+    padding: 1rem;
+    margin-bottom: 1.2rem;
+    border-width: 4px;
+  }
+
+  .room-code-label {
+    font-size: 12px;
+    margin-bottom: 0.6rem;
+  }
+
+  .room-code-text {
+    font-size: clamp(28px, 8vw, 36px);
+    letter-spacing: 4px;
+  }
+
+  .waiting-icon {
+    font-size: 40px;
+    margin-bottom: 0.6rem;
+  }
+
+  .waiting-message {
+    font-size: 14px;
+  }
+
+  .lobby-profile {
+    font-size: 11px;
+    padding: 7px 10px;
+    margin-bottom: 12px;
+  }
+
+  .lobby-profile-title {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .lobby-profile-row {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .lobby-section {
+    margin: 8px 0 12px;
+  }
+
+  .lobby-section-title {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .lobby-chip {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-width: 1px;
+  }
+
+  .lobby-small-button {
+    padding: 4px 8px;
+    font-size: 11px;
+    border-width: 1px;
+  }
+
+  .lobby-list-row {
+    gap: 8px;
+  }
+}
+
+@media (max-height: 600px) {
+  .lobby-box,
+  .waiting-box {
+    padding: 1.4rem;
+  }
+
+  .lobby-button {
+    padding: 0.8rem;
+    font-size: 18px;
+  }
+
+  .lobby-input {
+    padding: 0.8rem;
+    font-size: 16px;
+  }
+
+  .room-code-display {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .room-code-text {
+    font-size: 36px;
+    letter-spacing: 4px;
+  }
+
+  .waiting-icon {
+    font-size: 36px;
+  }
+}
+
+/* Landscape adjustments */
+@media (max-height: 500px) and (max-width: 768px) {
+  .lobby-container,
+  .waiting-container {
+    height: auto;
+    min-height: auto;
+    padding: 8px;
+  }
+
+  .lobby-box,
+  .waiting-box {
+    padding: 1rem;
+    border-width: 4px;
+  }
+
+  .lobby-title {
+    font-size: 20px;
+    margin-bottom: 0.8rem;
+  }
+
+  .lobby-button {
+    padding: 0.6rem;
+    font-size: 14px;
+    margin-bottom: 0.4rem;
+  }
+
+  .room-code-text {
+    font-size: 28px;
+  }
+}

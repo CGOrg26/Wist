@@ -1812,19 +1812,16 @@
   cursor: pointer;
   backdrop-filter: blur(15px);
   min-width: clamp(120px, 26vw, 150px);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .pill:hover {
   background: rgba(0, 0, 0, 0.85);
   border-color: rgba(138, 119, 255, 0.5);
-  transform: translateX(-12px);
 }
 
 .pill.active {
   background: linear-gradient(135deg, rgba(138, 119, 255, 0.95) 0%, rgba(255, 107, 180, 0.95) 100%);
   border-color: rgba(255, 255, 255, 0.4);
-  transform: translateX(-18px) scale(1.05);
 }
 
 .pill.locked {
@@ -1834,9 +1831,9 @@
 }
 
 .pill.locked:hover {
-  transform: none;
   border-color: rgba(255, 255, 255, 0.15);
   background: rgba(0, 0, 0, 0.7);
+  cursor: not-allowed;
 }
 
 .pill:disabled {
@@ -1907,7 +1904,6 @@
   border-radius: 50px;
   cursor: pointer;
   overflow: visible;
-  transition: background 0.3s ease, box-shadow 0.3s ease;
   transform: none !important;
 }
 
@@ -1917,7 +1913,6 @@
   background: radial-gradient(circle, rgba(138, 119, 255, 0.4), transparent 70%);
   border-radius: 50px;
   opacity: 0;
-  transition: opacity 0.3s ease;
   filter: blur(15px);
   z-index: -1;
   pointer-events: none;
@@ -1931,9 +1926,6 @@
 .nav-item:hover,
 .nav-item.active {
   background: linear-gradient(135deg, rgba(138, 119, 255, 0.2) 0%, rgba(138, 119, 255, 0.12) 100%);
-  box-shadow:
-    0 0 20px rgba(138, 119, 255, 0.3),
-    0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .nav-text {
@@ -1942,7 +1934,6 @@
   font-weight: 700;
   color: rgba(255, 255, 255, 0.7);
   letter-spacing: 0.5px;
-  transition: color 0.3s ease, text-shadow 0.3s ease;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
   text-transform: uppercase;
 }
@@ -1959,7 +1950,6 @@
   position: relative;
   font-size: clamp(14px, 2.4vw, 18px);
   color: rgba(255, 107, 53, 0.7);
-  transition: color 0.3s ease, text-shadow 0.3s ease;
   text-shadow: 0 0 8px rgba(255, 107, 53, 0.3);
 }
 

@@ -948,3 +948,530 @@
     animation: none !important;
   }
 }
+
+/* Additional responsive styles for better mobile support */
+@media (max-width: 768px) {
+  .congrats-screen {
+    padding: 12px;
+    min-height: 100svh;
+    height: auto;
+  }
+
+  .congrats-content {
+    max-width: 95vw;
+    padding: clamp(20px, 4vw, 32px);
+    max-height: none;
+  }
+
+  .back-lobby-btn {
+    top: 16px;
+    left: 16px;
+    padding: clamp(10px, 2vh, 12px) clamp(14px, 3vw, 20px);
+    font-size: clamp(12px, 2vw, 14px);
+    border-radius: 10px;
+  }
+
+  .memory-orbs-container,
+  .stars-container {
+    opacity: 0.5;
+  }
+
+  .completion-header {
+    gap: clamp(16px, 3vw, 24px);
+    margin-bottom: clamp(20px, 3vh, 32px);
+  }
+
+  .header-ornament {
+    width: clamp(50px, 10vw, 80px);
+    height: 2px;
+  }
+
+  .chapter-badge {
+    width: clamp(60px, 12vw, 80px);
+    height: clamp(60px, 12vw, 80px);
+  }
+
+  .badge-number {
+    font-size: clamp(24px, 5vw, 36px);
+  }
+
+  .congrats-title {
+    font-size: clamp(24px, 5vw, 48px);
+    margin-bottom: clamp(16px, 3vh, 24px);
+    letter-spacing: clamp(1px, 0.3vw, 4px);
+  }
+
+  .congrats-message {
+    margin-bottom: clamp(28px, 4vh, 48px);
+  }
+
+  .congrats-chapter-name {
+    font-size: clamp(20px, 4vw, 48px);
+    margin-bottom: 6px;
+  }
+
+  .congrats-subtext {
+    font-size: clamp(14px, 2.5vw, 20px);
+  }
+
+  .key-collection {
+    margin: clamp(20px, 4vh, 40px) auto;
+    padding: clamp(16px, 3vw, 40px);
+  }
+
+  .ornate-key {
+    width: clamp(120px, 25vw, 220px);
+    margin-bottom: clamp(16px, 3vh, 24px);
+  }
+
+  .key-label {
+    font-size: clamp(18px, 3.5vw, 28px);
+  }
+
+  .congrats-progress {
+    margin: clamp(32px, 4vh, 48px) 0 clamp(28px, 3vh, 40px);
+  }
+
+  .progress-label {
+    font-size: clamp(16px, 2.5vw, 24px);
+    margin-bottom: clamp(24px, 3vh, 32px);
+  }
+
+  .path-line {
+    height: clamp(60px, 12vh, 100px);
+    margin-bottom: 16px;
+  }
+
+  .keys-display {
+    gap: clamp(8px, 2vw, 12px);
+    margin-top: clamp(-45px, -8vh, -60px);
+  }
+
+  .key-node {
+    gap: 8px;
+  }
+
+  .node-ring {
+    width: clamp(36px, 8vw, 50px);
+    height: clamp(36px, 8vw, 50px);
+  }
+
+  .node-core {
+    width: clamp(12px, 2.5vw, 18px);
+    height: clamp(12px, 2.5vw, 18px);
+  }
+
+  .node-label {
+    font-size: clamp(9px, 1.5vw, 12px);
+    max-width: clamp(45px, 10vw, 80px);
+  }
+
+  .buttons-row {
+    gap: clamp(8px, 2vw, 16px);
+    margin-top: clamp(20px, 3vh, 32px);
+    flex-direction: column;
+  }
+
+  .congrats-continue-btn,
+  .congrats-lobby-btn {
+    width: 100%;
+    padding: clamp(12px, 2.5vh, 14px) clamp(24px, 4vw, 32px);
+    font-size: clamp(14px, 2.5vw, 16px);
+  }
+
+  .radial-waves {
+    opacity: 0.3;
+  }
+}
+
+@media (max-width: 640px) {
+  .congrats-screen {
+    padding: 12px;
+  }
+
+  .congrats-content {
+    padding: clamp(18px, 3vw, 28px);
+  }
+
+  .back-lobby-btn {
+    top: 12px;
+    left: 12px;
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+
+  .completion-header {
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .header-ornament {
+    width: 50px;
+  }
+
+  .chapter-badge {
+    width: 56px;
+    height: 56px;
+  }
+
+  .badge-number {
+    font-size: 28px;
+  }
+
+  .congrats-title {
+    font-size: clamp(22px, 4.5vw, 40px);
+    margin-bottom: 18px;
+  }
+
+  .congrats-chapter-name {
+    font-size: clamp(18px, 3.5vw, 36px);
+  }
+
+  .congrats-subtext {
+    font-size: 13px;
+  }
+
+  .congrats-message {
+    margin-bottom: 24px;
+  }
+
+  .key-collection {
+    margin: 24px auto;
+    padding: clamp(16px, 3vw, 28px);
+  }
+
+  .ornate-key {
+    width: clamp(110px, 22vw, 180px);
+    margin-bottom: 18px;
+  }
+
+  .key-label {
+    font-size: clamp(16px, 3vw, 24px);
+  }
+
+  .congrats-progress {
+    margin: 28px 0 24px;
+  }
+
+  .progress-label {
+    font-size: clamp(14px, 2.5vw, 20px);
+    margin-bottom: 20px;
+  }
+
+  .path-line {
+    height: 70px;
+  }
+
+  .keys-display {
+    gap: 8px;
+    margin-top: -50px;
+  }
+
+  .node-ring {
+    width: 40px;
+    height: 40px;
+  }
+
+  .node-core {
+    width: 14px;
+    height: 14px;
+  }
+
+  .node-label {
+    font-size: 10px;
+    max-width: 50px;
+  }
+
+  .buttons-row {
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .congrats-continue-btn,
+  .congrats-lobby-btn {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .congrats-screen {
+    padding: 8px;
+  }
+
+  .congrats-content {
+    padding: 16px 12px;
+    margin: 0 auto;
+  }
+
+  .back-lobby-btn {
+    top: 10px;
+    left: 10px;
+    padding: 8px 12px;
+    font-size: 11px;
+    border-width: 1px;
+  }
+
+  .completion-header {
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .header-ornament {
+    width: 40px;
+  }
+
+  .header-ornament::before,
+  .header-ornament::after {
+    width: 6px;
+    height: 6px;
+  }
+
+  .chapter-badge {
+    width: 50px;
+    height: 50px;
+  }
+
+  .badge-number {
+    font-size: 22px;
+  }
+
+  .badge-ring {
+    border-width: 2px;
+  }
+
+  .congrats-title {
+    font-size: clamp(18px, 4vw, 32px);
+    margin-bottom: 14px;
+    letter-spacing: 1px;
+  }
+
+  .congrats-chapter-name {
+    font-size: clamp(16px, 3vw, 28px);
+    margin-bottom: 4px;
+  }
+
+  .congrats-subtext {
+    font-size: 12px;
+  }
+
+  .congrats-message {
+    margin-bottom: 20px;
+  }
+
+  .key-collection {
+    margin: 20px auto;
+    padding: 14px 12px;
+    border-width: 1px;
+    border-radius: 16px;
+  }
+
+  .ornate-key {
+    width: clamp(100px, 20vw, 160px);
+    margin-bottom: 12px;
+  }
+
+  .key-label {
+    font-size: clamp(14px, 2.8vw, 20px);
+    margin: 0;
+  }
+
+  .key-particle {
+    width: 3px;
+    height: 3px;
+  }
+
+  .congrats-progress {
+    margin: 20px 0 16px;
+  }
+
+  .progress-label {
+    font-size: clamp(12px, 2.5vw, 18px);
+    margin-bottom: 16px;
+  }
+
+  .path-line {
+    height: 50px;
+    margin-bottom: 12px;
+  }
+
+  .keys-display {
+    gap: 6px;
+    margin-top: -40px;
+  }
+
+  .key-node {
+    gap: 6px;
+  }
+
+  .node-ring {
+    width: 32px;
+    height: 32px;
+    border-width: 2px;
+  }
+
+  .node-core {
+    width: 10px;
+    height: 10px;
+  }
+
+  .node-label {
+    font-size: 8px;
+    max-width: 40px;
+    line-height: 1;
+  }
+
+  .buttons-row {
+    gap: 8px;
+    margin-top: 18px;
+    flex-direction: column;
+  }
+
+  .congrats-continue-btn,
+  .congrats-lobby-btn {
+    width: 100%;
+    padding: 10px 18px;
+    font-size: 13px;
+    border-width: 1px;
+    border-radius: 10px;
+  }
+
+  .congrats-continue-btn {
+    min-height: 44px;
+  }
+
+  .congrats-lobby-btn {
+    min-height: 44px;
+  }
+
+  .memory-orbs-container {
+    display: none;
+  }
+
+  .stars-container {
+    opacity: 0.3;
+  }
+}
+
+@media (max-height: 600px) {
+  .congrats-content {
+    padding: 16px 12px;
+    max-height: 88vh;
+  }
+
+  .completion-header {
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .chapter-badge {
+    width: 48px;
+    height: 48px;
+  }
+
+  .badge-number {
+    font-size: 20px;
+  }
+
+  .congrats-title {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+
+  .congrats-chapter-name {
+    font-size: 18px;
+  }
+
+  .congrats-message {
+    margin-bottom: 16px;
+  }
+
+  .key-collection {
+    margin: 14px auto;
+    padding: 12px;
+  }
+
+  .ornate-key {
+    width: 140px;
+    margin-bottom: 10px;
+  }
+
+  .key-label {
+    font-size: 16px;
+  }
+
+  .congrats-progress {
+    margin: 12px 0 10px;
+  }
+
+  .progress-label {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .path-line {
+    height: 50px;
+  }
+
+  .buttons-row {
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .congrats-continue-btn,
+  .congrats-lobby-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}
+
+/* Landscape/wide aspect ratio adjustments */
+@media (max-height: 500px) {
+  .congrats-content {
+    padding: 12px 16px;
+  }
+
+  .completion-header {
+    margin-bottom: 10px;
+  }
+
+  .chapter-badge {
+    width: 40px;
+    height: 40px;
+  }
+
+  .congrats-title {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .key-collection {
+    margin: 10px auto;
+    padding: 10px;
+  }
+
+  .ornate-key {
+    width: 100px;
+  }
+
+  .path-line {
+    height: 40px;
+  }
+
+  .node-ring {
+    width: 28px;
+    height: 28px;
+  }
+
+  .buttons-row {
+    flex-direction: row;
+    margin-top: 8px;
+  }
+
+  .congrats-continue-btn,
+  .congrats-lobby-btn {
+    flex: 1;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+}

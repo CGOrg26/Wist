@@ -288,7 +288,7 @@ export default function MainMenu({
       </div>
 
       {/* Main menu */}
-      <nav className="sleek-nav elevated">
+      <nav className="sleek-nav">
         <div className="nav-container">
           {menuItems.map((item, idx) => (
             <button
