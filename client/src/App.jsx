@@ -44,7 +44,11 @@ function App() {
   };
   const API_BASE = getApiBase();
   
-  const [user, setUser] = useState(null);
+  // Initialize user from localStorage if exists (persistent login)
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('wist_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [authMode, setAuthMode] = useState("login");
   const [authForm, setAuthForm] = useState({ username: "", password: "" });
   const [authError, setAuthError] = useState("");
@@ -121,6 +125,8 @@ function App() {
     }
 
     setUser(data);
+    // Save user to localStorage for persistent login
+    localStorage.setItem('wist_user', JSON.stringify(data));
     setAuthForm({ username: "", password: "" });
 
     // Show diary on first login if user hasn't seen it
@@ -135,6 +141,8 @@ function App() {
     network.disconnect();
     network.setUser(null);
     setUser(null);
+    // Clear user from localStorage on explicit logout
+    localStorage.removeItem('wist_user');
     setAuthForm({ username: "", password: "" });
     setAuthError("");
     setRoomId("");
