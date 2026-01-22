@@ -1,6 +1,6 @@
 # Wist
 
-Wist is a 3D cooperative puzzle game platformer centered around two characters — a Mother and Daughter — who are transported into a mysterious dream-world following an emotional confrontation after the passing of the father. Each player experiences the world differently through unique visual themes and asymmetric abilities. The goal is for players to communicate, collaborate, and navigate puzzle-based levels that symbolically represent the five stages of grief: Denial, Anger, Bargaining, Depression, and Acceptance.
+Wist is a 3D cooperative puzzle platformer centered around two characters — a Mother and Daughter — who are transported into a mysterious dream-world following an emotional confrontation after the passing of the father. Each player experiences the world differently through unique visual themes and asymmetric abilities. The goal is for players to communicate, collaborate, and navigate puzzle-based levels that symbolically represent the five stages of grief: Denial, Anger, Bargaining, Depression, and Acceptance.
 
 ---
 
@@ -203,4 +203,5 @@ Thank you — enjoy exploring and exploring Wist!
  #   D e p l o y   b r a n c h   t e s t   0 1 / 2 2 / 2 0 2 6   1 4 : 3 8 : 5 3 
  
  
+
 
