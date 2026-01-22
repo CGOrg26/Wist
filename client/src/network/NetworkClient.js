@@ -5,16 +5,15 @@ export class NetworkClient {
     // Determine server URL based on environment
     let serverUrl;
     const hostname = typeof window !== "undefined" ? window.location.hostname : "";
-    const isProduction = hostname.includes("railway") || hostname.includes("production") || hostname !== "localhost";
     
-    if (isProduction && hostname !== "localhost") {
-      // Production: hardcoded backend URL
+    // Production: if using Railway domain
+    if (hostname.includes("railway") || hostname.includes("production")) {
       serverUrl = "https://wist-back-production.up.railway.app";
       console.log("🚀 PRODUCTION MODE - Hostname:", hostname);
       console.log("🚀 Connecting to:", serverUrl);
     } else {
-      // Development: use localhost:5000 for backend
-      serverUrl = "http://localhost:5000";
+      // Development: localhost or IP address - use same hostname for backend
+      serverUrl = `http://${hostname}:5000`;
       console.log("🔧 DEVELOPMENT MODE - Hostname:", hostname);
       console.log("🔧 Connecting to:", serverUrl);
     }

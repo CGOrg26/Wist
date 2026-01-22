@@ -128,7 +128,7 @@ export default function MainMenu({
 
           <div className="game-title">
             <h1 className="title-text">WIST</h1>
-            <p className="subtitle">A journey through fading memories</p>
+            <p className="subtitle">Auto-deployed! A journey through fading memories</p>
           </div>
 
           <div className="auth-panel elevated">

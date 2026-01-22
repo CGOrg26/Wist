@@ -37,10 +37,12 @@ function App() {
   // Determine API base URL based on environment
   const getApiBase = () => {
     const hostname = window.location.hostname;
-    if (hostname.includes("railway") || hostname.includes("production") || hostname !== "localhost") {
+    // Production: if using Railway domain
+    if (hostname.includes("railway") || hostname.includes("production")) {
       return "https://wist-back-production.up.railway.app";
     }
-    return "http://localhost:5000";  // Backend runs on port 5000
+    // Development: localhost or IP address - use same hostname for backend
+    return `http://${hostname}:5000`;
   };
   const API_BASE = getApiBase();
   
