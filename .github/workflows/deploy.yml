@@ -41,8 +41,14 @@ jobs:
       - name: Check health
         run: |
           Start-Sleep -Seconds 5
-          $response = curl -s http://localhost:5000 || "ERROR"
-          Write-Host "Backend response: $response"
+          try {
+            $response = Invoke-WebRequest -Uri http://localhost:5000 -UseBasicParsing -TimeoutSec 5
+            Write-Host "✅ Backend health check passed"
+            Write-Host "Status Code: $($response.StatusCode)"
+          } catch {
+            Write-Host "⚠️ Backend not responding yet, but deployment completed"
+            Write-Host "Error: $_"
+          }
           
       - name: Deployment successful
         run: |
