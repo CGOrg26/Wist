@@ -1,4 +1,4 @@
-name: Deploy to Server
+name: 🚀 Deploy Wist Game to Server
 
 on:
   push:
@@ -7,38 +7,63 @@ on:
       - master
       - deploy
       - deploy-server
-  workflow_dispatch:  # Allows manual trigger
+  workflow_dispatch:
 
 jobs:
   deploy:
-    runs-on: self-hosted  # Uses your server's runner
-    
+    name: Deploy Wist to Production Server
+    runs-on: self-hosted
+
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout latest code
         uses: actions/checkout@v4
 
-      - name: Stop services
+      - name: 🛑 Stop running services
         run: |
+          echo "Stopping Wist services..."
           pm2 stop wist-server wist-client 2>/dev/null || true
+          sleep 2
         continue-on-error: true
 
-      - name: Pull latest code
+      - name: 📥 Pull latest code from repository
         run: |
+          echo "Pulling latest code from deploy branch..."
           git config pull.rebase false
           git pull origin deploy --allow-unrelated-histories
+          echo "✅ Code pulled successfully"
 
-      - name: Install dependencies
+      - name: 📦 Install Node.js dependencies
         run: |
-          cd server && npm install --production && cd ..
-          cd client && npm install && npm run build && cd ..
+          echo "Installing server dependencies..."
+          cd server
+          npm install --production
+          cd ..
+          
+          echo "Installing client dependencies..."
+          cd client
+          npm install
+          npm run build
+          cd ..
+          echo "✅ Dependencies installed and built"
 
-      - name: Start services
+      - name: 🚀 Start services with PM2
         run: |
+          echo "Starting Wist services..."
+          
           pm2 start server/index.js --name "wist-server" --watch || pm2 restart "wist-server"
           pm2 start "serve -s client/dist -l 3000" --name "wist-client" || pm2 restart "wist-client"
+          
+          echo "Saving PM2 configuration..."
           pm2 save
+          
+          echo "✅ Services started successfully"
 
-      - name: Verify deployment
+      - name: ✅ Verify deployment
         run: |
+          echo "Waiting for services to start..."
           sleep 5
+          
+          echo "Checking service status..."
           pm2 status
+          
+          echo "✅ Deployment completed successfully!"
