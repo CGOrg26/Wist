@@ -24,7 +24,8 @@ jobs:
 
       - name: Pull latest code
         run: |
-          git pull origin deploy
+          git config pull.rebase false
+          git pull origin deploy --allow-unrelated-histories
 
       - name: Install dependencies
         run: |
