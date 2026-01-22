@@ -40,7 +40,7 @@ function App() {
     if (hostname.includes("railway") || hostname.includes("production") || hostname !== "localhost") {
       return "https://wist-back-production.up.railway.app";
     }
-    return "http://localhost:3000";
+    return "http://localhost:5000";  // Backend runs on port 5000
   };
   const API_BASE = getApiBase();
   

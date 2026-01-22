@@ -6,6 +6,7 @@ on:
       - main
       - master
       - deploy
+      - deploy-server
   workflow_dispatch:  # Allows manual trigger
 
 jobs:

@@ -13,8 +13,8 @@ export class NetworkClient {
       console.log("🚀 PRODUCTION MODE - Hostname:", hostname);
       console.log("🚀 Connecting to:", serverUrl);
     } else {
-      // Development: use localhost
-      serverUrl = "http://localhost:3000";
+      // Development: use localhost:5000 for backend
+      serverUrl = "http://localhost:5000";
       console.log("🔧 DEVELOPMENT MODE - Hostname:", hostname);
       console.log("🔧 Connecting to:", serverUrl);
     }
