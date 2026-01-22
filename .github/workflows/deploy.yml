@@ -1,0 +1,49 @@
+name: Deploy to Local Server
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  deploy:
+    runs-on: self-hosted  # Runs on your local PC
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Stop running containers
+        run: |
+          cd C:\Users\hp\Wist
+          docker-compose down
+        continue-on-error: true
+
+      - name: Pull latest code
+        run: |
+          cd C:\Users\hp\Wist
+          git pull origin main
+
+      - name: Build and start containers
+        run: |
+          cd C:\Users\hp\Wist
+          docker-compose up -d --build
+
+      - name: Verify deployment
+        run: |
+          cd C:\Users\hp\Wist
+          docker-compose ps
+          
+      - name: Check health
+        run: |
+          Start-Sleep -Seconds 5
+          $response = curl -s http://localhost:5000 || "ERROR"
+          Write-Host "Backend response: $response"
+          
+      - name: Deployment successful
+        run: |
+          Write-Host "✅ Deployment completed successfully!"
+          Write-Host "Frontend: http://localhost:3000"
+          Write-Host "Backend: http://localhost:5000"

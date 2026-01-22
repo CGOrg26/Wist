@@ -196,3 +196,5 @@ License
 - No license file was detected in the observed project files. Add a LICENSE file if you intend to open-source under a particular license.
 
 Thank you — enjoy exploring and exploring Wist!
+#   D e p l o y m e n t   t e s t  
+ 
