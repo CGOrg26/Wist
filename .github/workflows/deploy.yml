@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - deploy
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
@@ -24,7 +25,7 @@ jobs:
       - name: Pull latest code
         run: |
           cd C:\Users\hp\Wist
-          git pull origin main
+          git pull origin deploy
 
       - name: Build and start containers
         run: |
