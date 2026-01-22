@@ -27,9 +27,9 @@ jobs:
 
       - name: 📥 Pull latest code from repository
         run: |
-          echo "Pulling latest code from deploy branch..."
-          git config pull.rebase false
-          git pull origin deploy --allow-unrelated-histories
+          echo "Pulling latest code from deploy-server branch..."
+          git fetch origin deploy-server
+          git reset --hard origin/deploy-server
           echo "✅ Code pulled successfully"
 
       - name: 📦 Install Node.js dependencies
