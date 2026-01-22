@@ -1,4 +1,4 @@
-name: Deploy to Local Server
+name: Deploy to Server
 
 on:
   push:
@@ -11,47 +11,33 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted  # Runs on your local PC
+    runs-on: self-hosted  # Uses your server's runner
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Stop running containers
+      - name: Stop services
         run: |
-          cd C:\Users\hp\Wist
-          docker-compose down
+          pm2 stop wist-server wist-client 2>/dev/null || true
         continue-on-error: true
 
       - name: Pull latest code
         run: |
-          cd C:\Users\hp\Wist
           git pull origin deploy
 
-      - name: Build and start containers
+      - name: Install dependencies
         run: |
-          cd C:\Users\hp\Wist
-          docker-compose up -d --build
+          cd server && npm install --production && cd ..
+          cd client && npm install && npm run build && cd ..
+
+      - name: Start services
+        run: |
+          pm2 start server/index.js --name "wist-server" --watch || pm2 restart "wist-server"
+          pm2 start "serve -s client/dist -l 3000" --name "wist-client" || pm2 restart "wist-client"
+          pm2 save
 
       - name: Verify deployment
         run: |
-          cd C:\Users\hp\Wist
-          docker-compose ps
-          
-      - name: Check health
-        run: |
-          Start-Sleep -Seconds 5
-          try {
-            $response = Invoke-WebRequest -Uri http://localhost:5000 -UseBasicParsing -TimeoutSec 5
-            Write-Host "✅ Backend health check passed"
-            Write-Host "Status Code: $($response.StatusCode)"
-          } catch {
-            Write-Host "⚠️ Backend not responding yet, but deployment completed"
-            Write-Host "Error: $_"
-          }
-          
-      - name: Deployment successful
-        run: |
-          Write-Host "✅ Deployment completed successfully!"
-          Write-Host "Frontend: http://localhost:3000"
-          Write-Host "Backend: http://localhost:5000"
+          sleep 5
+          pm2 status
